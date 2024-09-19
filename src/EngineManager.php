@@ -2,62 +2,53 @@
 
 namespace Garissman\LaraChain;
 
+
 use Exception;
-use Garissman\Clerk\Engines\NullEngine;
-use Garissman\Clerk\Engines\WitEngine;
-use Garissman\Wit\Client;
-use Garissman\Wit\Wit;
+use Garissman\LaraChain\Engines\NullEngine;
+use Garissman\LaraChain\Engines\OllamaEngine;
+use Garissman\LaraChain\Engines\OpenAiEngine;
 use Illuminate\Support\Manager;
+use OpenAI\Laravel\Facades\OpenAI;
+
 class EngineManager extends Manager
 {
     /**
      * Get a driver instance.
      *
      * @param string|null $name
-     * @return WitEngine|NullEngine
+     * @return NullEngine|OllamaEngine|OpenAiEngine
      */
-    public function engine(string $name = null): NullEngine|WitEngine
+    public function engine(string $name = null): NullEngine|OllamaEngine|OpenAiEngine
     {
         return $this->driver($name);
     }
 
     /**
-     * Create Wit engine instance.
+     * Create Ollama engine instance.
      *
-     * @return WitEngine
+     * @return OllamaEngine
      *
      * @throws Exception
      */
-    public function createWitDriver() : WitEngine
+    public function createOllamaDriver(): OllamaEngine
     {
-        $this->ensureWitClientIsInstalled();
-        if (!config('clerk.drivers.wit.api_token',false)) {
-            throw new Exception('Wit API Token is empty');
-        }
-        return new WitEngine(
-            new Wit(
-                new Client(
-                    config('clerk.drivers.wit.api_token'),
-                    config('clerk.drivers.wit.api_version')
-                )
-            )
-        );
+        return new OllamaEngine();
     }
 
     /**
-     * Ensure the Algolia API client is installed.
+     * Create OpenAi engine instance.
      *
-     * @return void
+     * @return OpenAiEngine
      *
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function ensureWitClientIsInstalled(): void
+    public function createOpenAiDriver(): OpenAiEngine
     {
-        if (class_exists(Wit::class)) {
-            return;
+        if (!config('larachain.drivers.open_ai.api_token', false)) {
+            throw new Exception('OpenAi API Token is empty');
         }
 
-        throw new Exception('Please install the suggested Wit client: garissman/wit.');
+        return new OpenAiEngine();
     }
 
     /**
@@ -71,7 +62,7 @@ class EngineManager extends Manager
     }
 
     /**
-     * Forget all of the resolved engine instances.
+     * Forget all the resolved engine instances.
      *
      * @return $this
      */
@@ -83,16 +74,25 @@ class EngineManager extends Manager
     }
 
     /**
-     * Get the default Scout driver name.
+     * Get the default LaraChain driver name.
      *
      * @return string
      */
     public function getDefaultDriver(): string
     {
-        if (is_null($driver = config('clerk.driver'))) {
+        if (is_null($driver = config('larachain.driver'))) {
             return 'null';
         }
 
         return $driver;
+    }
+
+    protected function ensureWitClientIsInstalled(): void
+    {
+        if (class_exists(OpenAi::class)) {
+            return;
+        }
+
+        throw new Exception('Please install the suggested OpenAI client: openai-php/laravel.');
     }
 }

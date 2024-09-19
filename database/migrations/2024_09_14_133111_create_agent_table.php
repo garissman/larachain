@@ -16,8 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->longText('description')->nullable();
             $table->longText('context')->nullable();
+            $table->boolean('is_default')->default(false);
             $table->boolean('active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

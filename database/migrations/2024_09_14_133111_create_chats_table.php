@@ -1,9 +1,10 @@
 <?php
 
-use Garissman\LaraChain\Structures\Enums\ChatStatuesEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Models\Agent;
+use Structures\Enums\ChatStatuesEnum;
 
 return new class extends Migration
 {
@@ -14,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Agent::class, 'agent_id')->nullable();
             $table->string('title')->nullable();
             $table->string('chat_driver')->nullable();
             $table->string('embedding_driver')->nullable();
@@ -22,7 +24,6 @@ return new class extends Migration
                 ->nullable()
                 ->default(ChatStatuesEnum::NotStarted->value);
             $table->foreignIdFor(\App\Models\User::class, 'user_id')->nullable();
-
             $table->timestamps();
         });
     }
