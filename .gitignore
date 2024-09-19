@@ -1,0 +1,4 @@
+/tests/Credentials.php
+/vendor
+composer.lock
+/.idea

@@ -1,0 +1,40 @@
+{
+  "name": "garissman/larachain",
+  "description": "larachain",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ari Morales",
+      "email": "arimoralesjordan@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "Garissman\\Clerk\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Garissman\\Clerk\\Tests\\": "tests/"
+    }
+  },
+    "require": {
+    "guzzlehttp/guzzle": "^7.9",
+    "garissman/wit": "^1.0"
+  },
+    "require-dev": {
+        "phpunit/phpunit": "^11.3"
+    },
+    "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    },
+    "laravel": {
+      "providers": [
+        "Garissman\\LaraChain\\LaraChainServiceProvider"
+      ]
+    }
+  }
+}
