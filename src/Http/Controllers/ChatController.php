@@ -1,20 +1,19 @@
 <?php
 
-namespace \Http\Controllers;
+namespace Garissman\LaraChain\Http\Controllers;
 
 
 use App\Http\Controllers\Controller;
-use Garissman\Clerk\Facades\LaraChain;
+use Garissman\LaraChain\Facades\LaraChain;
+use Garissman\LaraChain\Models\Agent;
+use Garissman\LaraChain\Models\Chat;
+use Garissman\LaraChain\Models\Message;
+use Garissman\LaraChain\Structures\Enums\ChatStatuesEnum;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Response;
 use Inertia\ResponseFactory;
-use Models\Agent;
-use Models\Chat;
-use Models\Message;
-use Structures\Enums\ChatStatuesEnum;
-
 class ChatController extends Controller
 {
     //

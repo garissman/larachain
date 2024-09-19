@@ -1,6 +1,6 @@
 <?php
 
-namespace Garissman\Clerk\Structures\Classes;
+namespace Garissman\LaraChain\Structures\Classes;
 
 
 use Models\Chat;

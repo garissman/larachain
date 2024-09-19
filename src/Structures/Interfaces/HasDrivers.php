@@ -1,6 +1,6 @@
 <?php
 
-namespace Garissman\Clerk\Structures\Interfaces;
+namespace Garissman\LaraChain\Structures\Interfaces;
 
 
 interface HasDrivers

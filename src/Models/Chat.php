@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\DB;
  * @method static whereNull(string $string)
  * @method static find(mixed $chat_id)
  * @method addInputWithTools(string $sprintf, $param, $param1, $id, $param2, $param3, $name, $param4, $param5, $arguments)
+ * @method static create(array $array)
  */
 class Chat extends Model implements HasDrivers
 {

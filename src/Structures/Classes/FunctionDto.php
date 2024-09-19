@@ -1,6 +1,6 @@
 <?php
 
-namespace Garissman\LaraChain\Functions;
+namespace Garissman\LaraChain\Structures\Classes;
 
 /**
  * @method static from(array $array)

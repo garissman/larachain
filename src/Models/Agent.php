@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @property string $context
  * @method static create(array $array)
+ * @method static where(string $string, true $true)
  */
 class Agent extends Model
 {
