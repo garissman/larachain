@@ -2,7 +2,6 @@
 
 namespace Garissman\LaraChain\Structures\Classes;
 
-use Garissman\LaraChain\Functions\FunctionDto;
 use Garissman\LaraChain\Models\Message;
 use Garissman\LaraChain\Structures\Classes\Responses\FunctionResponse;
 use Garissman\LaraChain\Structures\Enums\ToolTypes;
@@ -36,7 +35,8 @@ abstract class FunctionContract
     }
 
     abstract public function handle(
-        Message $message,
+        Message $toolMessage,
+        Message $assistanceMessage,
         $arguments = [],
     ): FunctionResponse;
 

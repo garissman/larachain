@@ -6,40 +6,54 @@ use Garissman\LaraChain\Clients\BaseClient;
 use Garissman\LaraChain\Models\Chat;
 use Garissman\LaraChain\Structures\Classes\MessageInDto;
 use Garissman\LaraChain\Structures\Classes\Responses\CompletionResponse;
+use Garissman\LaraChain\Structures\Enums\RoleEnum;
 use Garissman\LaraChain\Structures\Enums\ToolTypes;
 
 abstract class Engine
 {
     protected BaseClient $client;
-    private Chat $chat;
-    protected string $systemPrompt='';
+    protected string $systemPrompt = '';
     protected ToolTypes $toolType;
+    private Chat $chat;
 
     public function setChat(Chat $chat): self
     {
-        $this->chat=$chat;
+        $this->chat = $chat;
         return $this;
     }
+
     public function setSystemPrompt(string $systemPrompt): self
     {
-        $this->systemPrompt=$systemPrompt;
+        $this->systemPrompt = $systemPrompt;
         return $this;
+    }
+
+    public function chat(): CompletionResponse
+    {
+        $this->setToolType(ToolTypes::Chat);
+        $messages = $this->getMessageThread();
+        $message = $this->chat
+            ->addInput(
+                message: '',
+                role: RoleEnum::Assistant,
+                is_been_whisper: true,
+            );
+        return $this->client
+            ->setToolType(ToolTypes::Chat)
+            ->chat($messages, $message);
     }
 
     public function setToolType(ToolTypes $toolType): self
     {
-        $this->toolType=$toolType;
+        $this->toolType = $toolType;
         return $this;
     }
 
-    public function chat():CompletionResponse
-    {
-        return $this->client->chat($this->getMessageThread());
-    }
     public function getMessageThread(int $limit = 5): array
     {
         return $this->getChatResponse($limit);
     }
+
     public function getChatResponse(int $limit = 5): array
     {
         $latestMessages = $this->chat->messages()
@@ -77,6 +91,7 @@ abstract class Engine
         return array_reverse($latestMessagesArray);
 
     }
+
     public function cleanString($string): string
     {
         // Remove Unicode escape sequences

@@ -2,6 +2,7 @@
 
 namespace Garissman\LaraChain\Structures\Classes\Responses;
 
+use Garissman\LaraChain\Models\Message;
 use Garissman\LaraChain\Structures\Classes\OpenAiToolDto;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Optional;
@@ -9,6 +10,7 @@ use Spatie\LaravelData\Optional;
 class OpenAiChatCompletionResponse extends CompletionResponse
 {
     public function __construct(
+        public Message $assistanceMessage,
         #[MapInputName('choices.0.message.content')]
         public mixed $content,
         #[MapInputName('choices.0.finish_reason')]

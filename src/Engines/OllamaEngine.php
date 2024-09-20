@@ -4,7 +4,6 @@ namespace Garissman\LaraChain\Engines;
 
 
 use Garissman\LaraChain\Clients\OllamaClient;
-use Garissman\LaraChain\Models\Chat;
 
 class OllamaEngine extends Engine
 {

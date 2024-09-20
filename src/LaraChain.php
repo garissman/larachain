@@ -2,8 +2,13 @@
 
 namespace Garissman\LaraChain;
 
-use Garissman\Larachain\Jobs\ProcessPendingResponse;
+use Garissman\LaraChain\Engines\NullEngine;
+use Garissman\LaraChain\Engines\OllamaEngine;
+use Garissman\LaraChain\Engines\OpenAiEngine;
+use Garissman\LaraChain\Jobs\ProcessPendingResponse;
 use Garissman\LaraChain\Models\Chat;
+use Garissman\LaraChain\Structures\Enums\ChatStatuesEnum;
+use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Facades\Bus;
 
@@ -11,26 +16,40 @@ use Illuminate\Support\Facades\Bus;
 class LaraChain
 {
 
-    public EngineManager $engine;
+    public OllamaEngine|NullEngine|OpenAiEngine $engine;
 
     public function __construct(private readonly Container $container)
     {
-        $this->engine = new EngineManager($this->container);
+//        $this->engine = (new EngineManager($this->container))->engine();
     }
 
-    public function invoke(): EngineManager
+    public function invoke(Chat $chat): OllamaEngine|NullEngine|OpenAiEngine
     {
-        return $this->engine;
+        return (new EngineManager($this->container))
+            ->engine($chat->chat_driver->value)
+            ->setChat($chat);
     }
 
-    public function handle(Chat $chat, string $prompt, string $systemPrompt = ''): void
+    /**
+     * @throws \Throwable
+     */
+    public function handle(Chat $chat, string $prompt, string $systemPrompt = ''): Batch
     {
+
         $chat->addInput(
             message: $prompt,
             systemPrompt: $systemPrompt,
         );
-        Bus::batch([new ProcessPendingResponse($chat, $this)])
+        $chat->update([
+            'chat_status' => ChatStatuesEnum::InProgress->value,
+        ]);
+        return Bus::batch([new ProcessPendingResponse($chat)])
             ->name("LaraChain Orchestrate Chain Chat - {$chat->id}")
+            ->finally(function (Batch $batch) use ($chat) {
+                $chat->update([
+                    'chat_status' => ChatStatuesEnum::Complete->value,
+                ]);
+            })
             ->allowFailures()
             ->dispatch();
     }

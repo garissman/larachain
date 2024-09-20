@@ -2,7 +2,8 @@
 
 namespace Garissman\LaraChain\Structures\Enums;
 
-use Structures\Traits\EnumHelperTrait;
+
+use Garissman\LaraChain\Structures\Traits\EnumHelperTrait;
 
 enum ToolTypes: string
 {

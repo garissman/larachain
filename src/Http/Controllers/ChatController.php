@@ -5,6 +5,7 @@ namespace Garissman\LaraChain\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Garissman\LaraChain\Facades\LaraChain;
+use Garissman\LaraChain\Jobs\ProcessPendingResponse;
 use Garissman\LaraChain\Models\Agent;
 use Garissman\LaraChain\Models\Chat;
 use Garissman\LaraChain\Models\Message;
@@ -68,17 +69,15 @@ class ChatController extends Controller
         $validated = $request->validate([
             'input' => 'required',
         ]);
-
-        $chat->update([
-            'chat_status' => ChatStatuesEnum::InProgress->value,
-        ]);
-        LaraChain::handle(
-            chat: $chat,
-            prompt: $validated['input']
+        $chat->addInput(
+            message: $validated['input']
         );
-        $chat->update([
-            'chat_status' => ChatStatuesEnum::Complete->value,
-        ]);
+        ProcessPendingResponse::dispatchSync($chat);
+//        LaraChain::handle(
+//            chat: $chat,
+//            prompt: $validated['input']
+//        );
+
     }
 
     public function updateChat(Request $request, Chat $chat): RedirectResponse

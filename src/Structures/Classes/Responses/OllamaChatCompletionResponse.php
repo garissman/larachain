@@ -3,6 +3,7 @@
 namespace Garissman\LaraChain\Structures\Classes\Responses;
 
 
+use Garissman\LaraChain\Models\Message;
 use Garissman\LaraChain\Structures\Classes\OllamaToolDto;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Optional;
@@ -13,6 +14,7 @@ use Spatie\LaravelData\Optional;
 class OllamaChatCompletionResponse extends CompletionResponse
 {
     public function __construct(
+        public Message $assistanceMessage,
         #[MapInputName('message.content')]
         public mixed $content,
         #[MapInputName('done_reason')]

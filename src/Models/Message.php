@@ -12,6 +12,7 @@ use Garissman\LaraChain\Structures\Interfaces\HasDrivers;
 use Garissman\LaraChain\Structures\Traits\HasDriversTrait;
 use Illuminate\Bus\Batch;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Bus;
  * @property Chat $chat
  * @property mixed $chat_id
  * @property array $args
+ * @property bool $is_been_whisper
  *
  * @method static where(string $string, mixed $get)
  */
@@ -31,6 +33,7 @@ use Illuminate\Support\Facades\Bus;
 class Message extends Model implements HasDrivers
 {
     use HasDriversTrait;
+    use BroadcastsEvents;
     use HasFactory;
 
     public $guarded = [];
@@ -42,6 +45,11 @@ class Message extends Model implements HasDrivers
         'args' => 'array',
         'in_out' => 'boolean',
     ];
+
+    public function broadcastOn(string $event): array
+    {
+        return [$this, "chat." . $this->chat_id];
+    }
 
     /**
      * Return true if the message is from the user.

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('chat_id')
                 ->constrained()
                 ->onDelete('cascade');
+            $table->foreignIdFor(\App\Models\User::class, 'user_id')->nullable();
             $table->string('role')->default('user');
             $table->text('body');
             $table->json('meta_data')->nullable();
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->string('tool_name')->nullable();
             $table->string('tool_id')->nullable();
             $table->string('driver')->nullable();
+            $table->boolean('is_been_whisper')->default(0);
             $table->boolean('in_out')->default(0);
             $table->boolean('is_chat_ignored')->default(0);
             $table->string('session_id')->nullable();

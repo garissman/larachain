@@ -2,9 +2,12 @@
 
 namespace Garissman\LaraChain\Clients;
 
-use Garissman\LaraChain\Functions\FunctionContract;
-use Garissman\LaraChain\Functions\FunctionDto;
 use Garissman\LaraChain\Models\Chat;
+use Garissman\LaraChain\Models\Message;
+use Garissman\LaraChain\Structures\Classes\FunctionContract;
+use Garissman\LaraChain\Structures\Classes\FunctionDto;
+use Garissman\LaraChain\Structures\Classes\Responses\CompletionResponse;
+use Garissman\LaraChain\Structures\Enums\RoleEnum;
 use Garissman\LaraChain\Structures\Enums\ToolTypes;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -26,6 +29,47 @@ abstract class BaseClient
     protected bool $formatJson = false;
 
     protected ?FunctionDto $forceTool = null;
+
+    abstract function chat(array $messages, Message $message): CompletionResponse;
+    abstract function processStreamLine(string $line):string;
+    public function streamOutput($body, Message $message): array
+    {
+        $return = [];
+        $content = '';
+        $response = '';
+        $tool_call = false;
+        while (!$body->eof()) {
+            $response .= $body->getContents();
+            $lines = explode("\n", $response);
+            foreach ($lines as $line) {
+                $line=$this->processStreamLine($line);
+                $line = json_decode($line, true);
+                if ($line) {
+                    $message->body = $content;
+                    $message->save();
+                    $return = $line;
+                    $content .= $line['message']['content'];
+                    if ($line['message']['content'] == '[TOOL_CALLS]') {
+                        $tool_call = true;
+                    }
+                    $response = '';
+                }
+            }
+        }
+        if ($tool_call) {
+            $return['message']['content'] = '';
+            $tool = json_decode(trim(str_replace('[TOOL_CALLS]', '', $content)), true);
+            $return['message']['tool_calls'] = $tool;
+//            $message->role =  RoleEnum::Tool;
+        } else {
+            $return['message']['content'] = $content;
+            $message->is_been_whisper = false;
+        }
+        $message->body = $content;
+        $message->save();
+        return $return;
+    }
+
 
     public function setSystemPrompt(string $systemPrompt = ''): self
     {

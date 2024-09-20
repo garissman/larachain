@@ -3,6 +3,7 @@
 namespace Garissman\LaraChain\Clients;
 
 use Exception;
+use Garissman\LaraChain\Models\Message;
 use Garissman\LaraChain\Structures\Classes\MessageInDto;
 use Garissman\LaraChain\Structures\Classes\Responses\CompletionResponse;
 use Garissman\LaraChain\Structures\Classes\Responses\EmbeddingsResponseDto;
@@ -10,13 +11,81 @@ use Garissman\LaraChain\Structures\Classes\Responses\OllamaChatCompletionRespons
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
-use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class OllamaClient extends BaseClient
 {
     protected string $driver = 'ollama';
+
+    /**
+     * @param MessageInDto[] $messages
+     *
+     * @throws ConnectionException
+     * @throws Exception
+     */
+    public function chat(array $messages, Message $message): CompletionResponse
+    {
+        $messages = $this->remapMessages($messages);
+        $stream = config('larachain.drivers.ollama.stream', false);
+        $payload = [
+            'model' => config('larachain.drivers.ollama.models.completion_model'),
+            'messages' => $messages,
+            'stream' => $stream,
+            'options' => [
+                'temperature' => 0,
+            ],
+        ];
+        $payload = $this->modifyPayload($payload);
+        $response = $this->getClient()->post('/chat', $payload);
+        if ($stream) {
+            $return = $this->streamOutput($response->getBody(), $message);
+        } else {
+            $return = $response->json();
+            $message->body = $return->content;
+            $message->is_been_whisper = false;
+            $message->save();
+        }
+        $return['assistanceMessage']=$message;
+        $return = OllamaChatCompletionResponse::from($return);
+        return $return;
+
+    }
+    public function processStreamLine(string $line): string
+    {
+        return $line;
+    }
+
+    /**
+     * @param MessageInDto[] $messages
+     */
+    public function remapMessages(array $messages): array
+    {
+        return collect($messages)->transform(function (MessageInDto $message): array {
+            return collect($message->toArray())
+                ->only(['content', 'role', 'tool_calls', 'tool_used', 'input_tokens', 'output_tokens', 'model'])
+                ->toArray();
+        })->toArray();
+    }
+
+    protected function getClient(): PendingRequest
+    {
+        $api_token = config('larachain.drivers.ollama.api_key');
+        $baseUrl = config('larachain.drivers.ollama.api_url');
+
+        if (!$api_token || !$baseUrl) {
+            throw new Exception('Ollama API Base URL or Token not found');
+        }
+
+        return Http::withHeaders([
+            'content-type' => 'application/json',
+        ])
+            ->retry(3, 6000)
+            ->timeout(120)
+            ->baseUrl($baseUrl);
+    }
+
+
 
     /**
      * @throws ConnectionException
@@ -37,23 +106,6 @@ class OllamaClient extends BaseClient
             'embedding' => data_get($results, 'embedding'),
             'token_count' => 1000,
         ]);
-    }
-
-    protected function getClient(): PendingRequest
-    {
-        $api_token = config('larachain.drivers.ollama.api_key');
-        $baseUrl = config('larachain.drivers.ollama.api_url');
-
-        if (!$api_token || !$baseUrl) {
-            throw new Exception('Ollama API Base URL or Token not found');
-        }
-
-        return Http::withHeaders([
-            'content-type' => 'application/json',
-        ])
-            ->retry(3, 6000)
-            ->timeout(120)
-            ->baseUrl($baseUrl);
     }
 
     public function addJsonFormat(array $payload): array
@@ -86,93 +138,6 @@ class OllamaClient extends BaseClient
 
 
         return $functions;
-    }
-
-    /**
-     * @param MessageInDto[] $messages
-     *
-     * @throws ConnectionException
-     * @throws Exception
-     */
-    public function chat(array $messages): CompletionResponse
-    {
-        $messages = $this->remapMessages($messages);
-        $stream = config('larachain.drivers.ollama.stream', false);
-        $payload = [
-            'model' => config('larachain.drivers.ollama.models.completion_model'),
-            'messages' => $messages,
-            'stream' => $stream,
-            'options' => [
-                'temperature' => 0,
-            ],
-        ];
-        $payload = $this->modifyPayload($payload);
-        $response = $this->getClient()->post('/chat', $payload);
-        if ($stream) {
-            $return = $this->streamOutput($response->getBody());
-        } else {
-            $return = $response->json();
-        }
-
-        return OllamaChatCompletionResponse::from($return);
-    }
-
-    /**
-     * @param MessageInDto[] $messages
-     */
-    public function remapMessages(array $messages): array
-    {
-        return collect($messages)->transform(function (MessageInDto $message): array {
-            return collect($message->toArray())
-                ->only(['content', 'role', 'tool_calls', 'tool_used', 'input_tokens', 'output_tokens', 'model'])
-                ->toArray();
-        })->toArray();
-    }
-
-    public function streamOutput($body)
-    {
-        $latestMessage = $this->chat->messages()->latest()->first();
-        $return = [];
-        $content = '';
-        $response = '';
-        $tool_call = false;
-        while (!$body->eof()) {
-            $response .= $body->getContents();
-            $lines = explode("\n", $response);
-            foreach ($lines as $line) {
-                $line = json_decode($line, true);
-                if ($line) {
-                    Broadcast::on('chat.' . $this->chat->id)
-                        ->as('AiWhispering')
-                        ->with(['content' => $content])
-                        ->send();
-                    $return = $line;
-                    $content .= $line['message']['content'];
-                    if ($line['message']['content'] == '[TOOL_CALLS]') {
-                        $tool_call = true;
-                    }
-                    if (!$tool_call) {
-                        Broadcast::on('chat.' . $this->chat->id)
-                            ->as('AiStreaming')
-                            ->with([
-                                'last_message' => $latestMessage->id,
-                                'stream' => $line,
-                            ])
-                            ->send();
-                    }
-                    $response = '';
-                }
-            }
-        }
-        if ($tool_call) {
-            $return['message']['content'] = '';
-            $tool = json_decode(trim(str_replace('[TOOL_CALLS]', '', $content)), true);
-            $return['message']['tool_calls'] = $tool;
-        } else {
-            $return['message']['content'] = $content;
-        }
-
-        return $return;
     }
 
     /**

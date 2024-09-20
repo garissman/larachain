@@ -3,6 +3,8 @@
 namespace Garissman\LaraChain\Structures\Classes\Responses;
 
 
+use Garissman\LaraChain\Models\Message;
+use Garissman\LaraChain\Structures\Classes\ToolDto;
 use Spatie\LaravelData\Optional;
 
 /**
@@ -11,6 +13,7 @@ use Spatie\LaravelData\Optional;
 class CompletionResponse extends \Spatie\LaravelData\Data
 {
     public function __construct(
+        public Message $assistanceMessage,
         public mixed $content,
         public string|Optional $stop_reason,
         public ?string $tool_used = '',

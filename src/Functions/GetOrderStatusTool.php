@@ -7,6 +7,7 @@ use Garissman\LaraChain\Models\Message;
 use Garissman\LaraChain\Structures\Classes\FunctionContract;
 use Garissman\LaraChain\Structures\Classes\PropertyDto;
 use Garissman\LaraChain\Structures\Classes\Responses\FunctionResponse;
+use Garissman\LaraChain\Structures\Enums\RoleEnum;
 use Garissman\LaraChain\Structures\Enums\ToolTypes;
 use Garissman\LaraChain\Structures\Traits\ChatHelperTrait;
 use Garissman\LaraChain\Structures\Traits\ToolsHelper;
@@ -27,11 +28,15 @@ class GetOrderStatusTool extends FunctionContract
     ];
     protected string $description = 'Trigger this intent if user ask to check his order status, and ask for email and order number if you do not have it.';
 
-    public function handle(Message $message, $arguments = []): FunctionResponse
+    public function handle(
+        Message $toolMessage,
+        Message $assistanceMessage,
+                $arguments = []
+    ): FunctionResponse
     {
         Log::info('[LaraChain] GetOrderStatusTool Function called');
 
-        $args = $message->args;
+        $args = $toolMessage->args;
 
         $email = data_get($args, 'email', null);
         $orderNumber = data_get($args, 'order_number', null);
@@ -40,14 +45,22 @@ class GetOrderStatusTool extends FunctionContract
             'email' => $email,
             'order_number' => $orderNumber,
         ]);
+        $assistanceMessage->role=RoleEnum::Tool;
+        $assistanceMessage->body = 'Let me take a look';
+        $assistanceMessage->is_been_whisper = false;
+        $assistanceMessage->tool_name = $toolMessage->tool_name;
+        $assistanceMessage->tool_id= $toolMessage->tool_id;
+        $assistanceMessage->args= $toolMessage->args;
+        $assistanceMessage->save();
+//        $assistanceMessage->delete();
 
         // Do Some Query
-        $message->body = 'Order Status is Completed';
-        $message->save();
+        $toolMessage->body = 'Order Status is Completed';
+        $toolMessage->save();
 
         return FunctionResponse::from([
-            'content' => $message->body,
-            'prompt' => $message->body,
+            'content' => $toolMessage->body,
+            'prompt' => $toolMessage->body,
             'requires_followup' => false,
             'documentChunks' => collect([]),
             'save_to_message' => false,

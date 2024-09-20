@@ -3,7 +3,6 @@
 namespace Garissman\LaraChain\Models;
 
 use App\Models\User;
-
 use Garissman\LaraChain\Structures\Classes\MetaDataDto;
 use Garissman\LaraChain\Structures\Classes\ToolsDto;
 use Garissman\LaraChain\Structures\Enums\ChatStatuesEnum;
@@ -17,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+
 /**
  * @property string $session_id;
  * @property Collection|Message[] $messages
@@ -48,18 +48,17 @@ class Chat extends Model implements HasDrivers
         ?string      $systemPrompt = null,
         bool         $show_in_thread = true,
         ?MetaDataDto $meta_data = null,
-        ?ToolsDto    $tools = null): Message
+        ?ToolsDto    $tools = null,
+        bool         $is_been_whisper = false): Message
     {
         if (!$meta_data) {
             $meta_data = MetaDataDto::from([]);
         }
 
 
-        return DB::transaction(function () use ($message, $role, $tools, $systemPrompt, $show_in_thread, $meta_data) {
+        return DB::transaction(function () use ($message, $role, $tools, $show_in_thread, $meta_data, $is_been_whisper) {
 
-            if ($systemPrompt) {
-                $this->createSystemMessageIfNeeded($systemPrompt);
-            }
+            $this->createSystemMessageIfNeeded();
 
             return $this->messages()->create(
                 [
@@ -71,6 +70,7 @@ class Chat extends Model implements HasDrivers
                     'chat_id' => $this->id,
                     'user_id' => ($role === RoleEnum::User && auth()->check()) ? auth()->user()->id : null,
                     'is_chat_ignored' => !$show_in_thread,
+                    'is_been_whisper' => $is_been_whisper,
                     'meta_data' => $meta_data,
                     'tool_name' => $meta_data->tool,
                     'tool_id' => $meta_data->tool_id,
@@ -82,13 +82,12 @@ class Chat extends Model implements HasDrivers
 
     }
 
-    protected function createSystemMessageIfNeeded(string $systemPrompt): void
+    protected function createSystemMessageIfNeeded(): void
     {
         if ($this->messages()->count() == 0) {
-
             $this->messages()->create(
                 [
-                    'body' => $systemPrompt,
+                    'body' => $this->agent->context,
                     'in_out' => false,
                     'role' => RoleEnum::System,
                     'created_at' => now(),
@@ -104,14 +103,14 @@ class Chat extends Model implements HasDrivers
         return $this->hasMany(Message::class);
     }
 
-    public function agent(): BelongsTo
-    {
-        return $this->belongsTo(Agent::class);
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function agent(): BelongsTo
+    {
+        return $this->belongsTo(Agent::class);
     }
 
     public function latest_messages(): HasMany

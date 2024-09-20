@@ -6,14 +6,16 @@ declare(strict_types=1);
 namespace Garissman\LaraChain\Facades;
 
 
-use Garissman\LaraChain\EngineManager;
+use Garissman\LaraChain\Engines\NullEngine;
+use Garissman\LaraChain\Engines\OllamaEngine;
+use Garissman\LaraChain\Engines\OpenAiEngine;
 use Garissman\LaraChain\Models\Chat;
 use Illuminate\Support\Facades\Facade;
 
 
 /**
- * @method static handle(Chat $chat, string $prompt,string $systemPrompt = '')
- * @method static EngineManager invoke()
+ * @method static handle(Chat $chat, string $prompt, string $systemPrompt = '')
+ * @method static OllamaEngine|NullEngine|OpenAiEngine invoke(Chat $chat)
  */
 class LaraChain extends Facade
 {

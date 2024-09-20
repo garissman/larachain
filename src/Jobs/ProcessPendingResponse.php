@@ -5,13 +5,13 @@ namespace Garissman\LaraChain\Jobs;
 use Garissman\LaraChain\Facades\LaraChain;
 use Garissman\LaraChain\Models\Chat;
 use Garissman\LaraChain\Structures\Enums\RoleEnum;
-use Garissman\LaraChain\Structures\Enums\ToolTypes;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 
 class ProcessPendingResponse implements ShouldQueue
@@ -20,7 +20,8 @@ class ProcessPendingResponse implements ShouldQueue
 
 
     public function __construct(protected Chat $chat)
-    {}
+    {
+    }
 
     /**
      * Execute the job.
@@ -29,12 +30,8 @@ class ProcessPendingResponse implements ShouldQueue
      */
     public function handle(): void
     {
-        $response = LaraChain::invoke()
-            ->engine()
-            ->setChat($this->chat)
-            ->setToolType(ToolTypes::Chat)
+        $response = LaraChain::invoke($this->chat)
             ->chat();
-
         if (!empty($response->tool_calls)) {
             foreach ($response->tool_calls as $tool_call) {
                 $tool = $this->getTool($tool_call->name);
@@ -53,19 +50,10 @@ class ProcessPendingResponse implements ShouldQueue
                             'tool_id' => $tool_call->id,
                             'args' => $tool_call->arguments,
                         ]);
-                if (!$this->batch()->cancelled()) {
-                    $this->batch()->add([
-                        new ProcessPendingTool($tool, $message, $tool_call->arguments),
-                        new ProcessPendingResponse($this->chat)
-                    ]);
-                }
+                $tool->handle($message,$response->assistanceMessage,  $tool_call->arguments);
+                $response = LaraChain::invoke($this->chat)
+                    ->chat();
             }
-        } else {
-            $this->chat
-                ->addInput(
-                    message: $response->content,
-                    role: RoleEnum::Assistant,
-                );
         }
     }
 
@@ -80,5 +68,9 @@ class ProcessPendingResponse implements ShouldQueue
                 return $function->name === $name;
             })
             ->first();
+    }
+    public function middleware(): array
+    {
+        return [(new WithoutOverlapping('chat.'.$this->chat->id))->dontRelease()];
     }
 }

@@ -44,11 +44,21 @@ class EngineManager extends Manager
      */
     public function createOpenAiDriver(): OpenAiEngine
     {
-        if (!config('larachain.drivers.open_ai.api_token', false)) {
+        if (!config('larachain.drivers.openai.api_key', false)) {
             throw new Exception('OpenAi API Token is empty');
         }
+        $this->ensureOpenAiClientIsInstalled();
 
         return new OpenAiEngine();
+    }
+
+    protected function ensureOpenAiClientIsInstalled(): void
+    {
+        if (class_exists(OpenAi::class)) {
+            return;
+        }
+
+        throw new Exception('Please install the suggested OpenAI client: openai-php/laravel.');
     }
 
     /**
@@ -85,14 +95,5 @@ class EngineManager extends Manager
         }
 
         return $driver;
-    }
-
-    protected function ensureWitClientIsInstalled(): void
-    {
-        if (class_exists(OpenAi::class)) {
-            return;
-        }
-
-        throw new Exception('Please install the suggested OpenAI client: openai-php/laravel.');
     }
 }

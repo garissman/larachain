@@ -12,7 +12,7 @@ class MetaDataDto extends Data
     public function __construct(
         public mixed $persona = '',
         public mixed $filter = null,
-        public bool $completion = false,
+        public bool  $completion = false,
         public mixed $tool = '',
         public mixed $tool_id = '',
         public mixed $date_range = '',

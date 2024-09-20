@@ -4,7 +4,6 @@ namespace Garissman\LaraChain\Engines;
 
 
 use Garissman\LaraChain\Clients\OpenAiClient;
-use Illuminate\Contracts\Container\Container;
 
 
 class OpenAiEngine extends Engine
