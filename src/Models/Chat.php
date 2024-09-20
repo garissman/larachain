@@ -4,12 +4,12 @@ namespace Garissman\LaraChain\Models;
 
 use App\Models\User;
 
-use Garissman\Clerk\Structures\Interfaces\HasDrivers;
 use Garissman\LaraChain\Structures\Classes\MetaDataDto;
 use Garissman\LaraChain\Structures\Classes\ToolsDto;
 use Garissman\LaraChain\Structures\Enums\ChatStatuesEnum;
 use Garissman\LaraChain\Structures\Enums\DriversEnum;
 use Garissman\LaraChain\Structures\Enums\RoleEnum;
+use Garissman\LaraChain\Structures\Interfaces\HasDrivers;
 use Garissman\LaraChain\Structures\Traits\HasDriversTrait;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

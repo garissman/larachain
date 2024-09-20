@@ -1,6 +1,6 @@
 <?php
 
-use Http\Controllers\ChatController;
+use Garissman\LaraChain\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/chat/{chat?}', [ChatController::class, 'index'])

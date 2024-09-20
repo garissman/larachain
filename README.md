@@ -11,8 +11,8 @@ Chat bot Clerk to support your product made with Laravel.
 After installing, you should publish the configuration file using the vendor:publish Artisan command. This
 command will publish the configuration file to your application's config directory:
 
-`php artisan vendor:publish --provider="Garissman\LaraChain\LaraChainServiceProvider"`
+`php artisan larachain:install`
 
 
-## TODO
+## TODO More doc about models
 ----

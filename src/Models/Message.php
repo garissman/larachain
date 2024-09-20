@@ -4,11 +4,11 @@ namespace Garissman\LaraChain\Models;
 
 
 use App\Models\User;
-use Garissman\Clerk\Structures\Interfaces\HasDrivers;
 use Garissman\LaraChain\Observers\MessageObserver;
 use Garissman\LaraChain\Structures\Classes\MetaDataDto;
 use Garissman\LaraChain\Structures\Classes\ToolsDto;
 use Garissman\LaraChain\Structures\Enums\RoleEnum;
+use Garissman\LaraChain\Structures\Interfaces\HasDrivers;
 use Garissman\LaraChain\Structures\Traits\HasDriversTrait;
 use Illuminate\Bus\Batch;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;

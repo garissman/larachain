@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Response;
 use Inertia\ResponseFactory;
+
 class ChatController extends Controller
 {
     //
@@ -25,8 +26,15 @@ class ChatController extends Controller
                 ->orderBy('created_at', 'ASC')
                 ->get();
         }
-
-        return inertia('GuestChat/Chat', [
+        $drivers = config('larachain.drivers');
+        $active_llms = [];
+        foreach ($drivers as $name => $driver) {
+            $active_llms[] = [
+                "title"=>$name,
+                "key"=>$name
+            ];
+        }
+        return inertia('Chat', [
             'chats' => Chat::orderBy('updated_at', 'desc')
                 ->with([
                     'messages' => fn($q) => $q->notSystem()
@@ -37,6 +45,7 @@ class ChatController extends Controller
                 ->paginate(10),
             'chat' => $chat,
             'messages' => $messages,
+            'active_llms' => $active_llms,
         ]);
     }
 

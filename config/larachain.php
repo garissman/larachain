@@ -2,7 +2,6 @@
 
 
 use Garissman\LaraChain\Functions\GetOrderStatusTool;
-use Garissman\LaraChain\Functions\GetPackageDetailsTool;
 
 return [
     'driver' => 'openai',
@@ -34,8 +33,7 @@ return [
     'path'=>'larachain',
     'middleware' => ['web'],
     'tools' => [
-        GetOrderStatusTool::class,
-        GetPackageDetailsTool::class
+        GetOrderStatusTool::class
     ],
 
 ];

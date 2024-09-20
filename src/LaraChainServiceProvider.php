@@ -2,6 +2,8 @@
 
 namespace Garissman\LaraChain;
 
+use Garissman\LaraChain\Console\CreateDefaultAgentCommand;
+use Garissman\LaraChain\Console\InstallCommand;
 use Illuminate\Contracts\Foundation\CachesRoutes;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -45,18 +47,18 @@ class LaraChainServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../stubs/larachain.php' => config_path('larachain.php'),
+                __DIR__ . '/../config/larachain.php' => config_path('larachain.php'),
             ], 'larachain-config');
             $publishesMigrationsMethod = method_exists($this, 'publishesMigrations')
                 ? 'publishesMigrations'
                 : 'publishes';
 
             $this->{$publishesMigrationsMethod}([
-                __DIR__.'/../database/migrations' => database_path('migrations'),
+                __DIR__ . '/../database/migrations' => database_path('migrations'),
             ], 'larachain-migrations');
 
             $this->publishes([
-                __DIR__.'/../public' => public_path('vendor/larachain'),
+                __DIR__ . '/../public' => public_path('vendor/larachain'),
             ], ['larachain-assets', 'laravel-assets']);
         }
     }
@@ -66,6 +68,12 @@ class LaraChainServiceProvider extends ServiceProvider
      */
     protected function registerCommands(): void
     {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                InstallCommand::class,
+                CreateDefaultAgentCommand::class
+            ]);
+        }
     }
 
     /**
