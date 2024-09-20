@@ -10,8 +10,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Queue\SerializesModels;
 
 
 class ProcessPendingResponse implements ShouldQueue
@@ -35,7 +35,7 @@ class ProcessPendingResponse implements ShouldQueue
         if (!empty($response->tool_calls)) {
             foreach ($response->tool_calls as $tool_call) {
                 $tool = $this->getTool($tool_call->name);
-                $message = $this
+                $toolMessage = $this
                     ->chat
                     ->messages()
                     ->create(
@@ -50,7 +50,13 @@ class ProcessPendingResponse implements ShouldQueue
                             'tool_id' => $tool_call->id,
                             'args' => $tool_call->arguments,
                         ]);
-                $tool->handle($message,$response->assistanceMessage,  $tool_call->arguments);
+                $tool->handle($toolMessage, $response->assistanceMessage, $tool_call->arguments);
+//                if (!$this->batch()->cancelled()) {
+//                    $this->batch()->add([
+//                        new ProcessPendingTool($tool, $response->assistanceMessage, $toolMessage, $tool_call->arguments),
+////                        new ProcessPendingResponse($this->chat)
+//                    ]);
+//                }
                 $response = LaraChain::invoke($this->chat)
                     ->chat();
             }
@@ -69,8 +75,9 @@ class ProcessPendingResponse implements ShouldQueue
             })
             ->first();
     }
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping('chat.'.$this->chat->id))->dontRelease()];
-    }
+
+//    public function middleware(): array
+//    {
+//        return [(new WithoutOverlapping('chat.' . $this->chat->id))->dontRelease()];
+//    }
 }

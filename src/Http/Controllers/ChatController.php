@@ -69,10 +69,6 @@ class ChatController extends Controller
         $validated = $request->validate([
             'input' => 'required',
         ]);
-//        $chat->addInput(
-//            message: $validated['input']
-//        );
-//        ProcessPendingResponse::dispatch($chat);
         LaraChain::handle(
             chat: $chat,
             prompt: $validated['input']
