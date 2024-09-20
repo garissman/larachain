@@ -9,7 +9,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
 class ProcessPendingTool implements ShouldQueue
@@ -33,7 +32,7 @@ class ProcessPendingTool implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->tool->handle($this->assistanceMessage, $this->toolMessage, $this->arguments);
+        $this->tool->handle($this->toolMessage, $this->assistanceMessage, $this->arguments);
         if (!$this->batch()->cancelled()) {
             $this->batch()->add([
                 new ProcessPendingResponse($this->assistanceMessage->chat)
