@@ -7,22 +7,21 @@ import ChatMessages from "@/Pages/ChatMessages.vue";
 const Props = defineProps({
     chats: Object,
     chat: Object,
-    messages: Array
+    messages: Array,
+    active_llms:Array
 })
-
 let scroller = ref();
 const form = reactive({
     input: "",
     chat: Props.chat,
     messages: Props.messages,
     streamed_messages: [],
-    show_typing:true
+    show_typing:false
 });
 
 watch(
     () => form.chat?.chat_driver,
     (value) => {
-        console.log("form.chat", form.chat);
         updateChat(form.chat)
     }
 );
@@ -36,7 +35,6 @@ watch(
 watch(
     () => form.messages,
     (value) => {
-        console.log("form.messages", form.messages);
         scrollMessage()
     },
     {
@@ -60,7 +58,6 @@ const updateChat = (chat) => {
 
 const sendMessage = () => {
     if (form.input !== "") {
-        userMessage(form.input);
         scrollMessage();
         router
             .post(
@@ -88,12 +85,8 @@ const sendMessage = () => {
 
 }
 const scrollMessage = () => {
-    if (
-        typeof scroller != 'undefined'
-        && typeof scroller.value != 'undefined'
-    ) {
-        scroller.value.scroll({top: scroller.value.scrollHeight});
-    }
+    const scroll = document.getElementById("scroller");
+    scroll.scrollTop = scroll.scrollHeight + scroll.clientHeight;
 }
 const stopListening = () => {
     let channel = 'chat.' + Props.chat.id;
@@ -107,56 +100,22 @@ const startListening = () => {
     let channel = 'chat.' + Props.chat.id;
     Echo
         .channel(channel)
-        .listen('.update', (notification) => {
-            console.log('update', notification);
-            updateMessage(notification.message);
-            form.show_typing=true;
+        .listen('.MessageCreated', (incoming_message) => {
+            console.log('MessageCreated', incoming_message);
+            updateMessage(incoming_message.model);
         })
-        .listen('.AiStreaming', (incoming_message) => {
-            console.log('AiStreaming', incoming_message);
-            form.show_typing=false;
-            updateStreamedMessage(incoming_message)
-        })
-        .listen('.AiWhispering', (event) => {
-            console.log('AiWhispering', event);
-            form.show_typing=true;
+        .listen('.MessageUpdated', (incoming_message) => {
+            console.log('MessageUpdated', incoming_message);
+            updateMessage(incoming_message.model);
         });
 }
-const userMessage = (message) => {
-    let imessage = {
-        id: "User" + window.crypto.randomUUID(),
-        body: message,
-        role: 'user'
-    };
-    console.log('UserMessage', imessage);
-    form.streamed_messages.push(imessage);
-    updateMessage(imessage, true);
-}
-const updateStreamedMessage = (incoming_message) => {
-    let imessage = {
-        id: "AiStreaming" + incoming_message.last_message,
-        body: incoming_message.stream.message.content,
-        role: incoming_message.stream.message.role
-    };
-    let message = form.streamed_messages.find((message) => message.id === imessage.id);
-    if (message) {
-        form.streamed_messages = form.streamed_messages.map((message) => {
-            if (message.id === imessage.id) {
-                message.body += imessage.body;
-            }
-            return message;
-        });
-    } else {
-        form.streamed_messages.push(imessage);
-    }
-    updateMessage(form.streamed_messages.find((message) => message.id === imessage.id), true);
-}
+
 const updateMessage = (incomingMessage, is_streaming = false) => {
     let message = form.messages.find((message) => message.id === incomingMessage.id);
     if (message) {
         form.messages = form.messages.map((message) => {
             if (message.id === incomingMessage.id) {
-                message.body = incomingMessage.body;
+                return incomingMessage;
             }
             return message;
         });
@@ -246,7 +205,7 @@ onMounted(() => {
                 <div
                     class="flex-2"
                 >
-                    <SelectDriver v-model="form.chat.chat_driver"/>
+                    <SelectDriver v-model="form.chat.chat_driver" :active_llms="active_llms"/>
                 </div>
                 <div
                     class="flex-3"
@@ -260,21 +219,10 @@ onMounted(() => {
             <!-- Chat Messages -->
             <div
                 ref="scroller"
+                id="scroller"
                 class="h-screen justify-end overflow-y-auto p-4 pb-44 scroll-smooth"
             >
                 <ChatMessages :messages="form.messages"/>
-                <div
-                    v-if="form.show_typing"
-                    class="flex mb-4 cursor-pointer"
-                >
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center mr-2">
-                        <img alt="User Avatar" class="w-10 h-10 rounded-full"
-                             src="https://placehold.co/200x/4f46e5/ffffff.svg?text=TwAina&font=Lato">
-                    </div>
-                    <div class="max-w-96 bg-white rounded-lg justify-center items-center px-3 gap-0">
-                        <div class="animate-typing overflow-hidden text-2xl text-gray-700">...</div>
-                    </div>
-                </div>
                 <div id="anchor"></div>
             </div>
             <!-- Chat Input -->

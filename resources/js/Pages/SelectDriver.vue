@@ -21,7 +21,7 @@
                 class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
             >
                 <ComboboxOption
-                    v-for="llm_driver in PageProps.active_llms"
+                    v-for="llm_driver in active_llms"
                     :key="llm_driver.key"
                     v-slot="{ active, selected }"
                     :value="llm_driver"
@@ -50,10 +50,10 @@
 </template>
 
 <script setup>
-import {computed, ref,watch} from 'vue'
+import {computed, ref, watch} from 'vue'
 import {CheckIcon, ChevronUpDownIcon} from '@heroicons/vue/20/solid'
 import {Combobox, ComboboxButton, ComboboxInput, ComboboxLabel, ComboboxOption, ComboboxOptions,} from '@headlessui/vue'
-import {usePage} from "@inertiajs/vue3";
+
 const emit = defineEmits(["update:modelValue"]);
 const Props = defineProps({
     modelValue: {
@@ -63,12 +63,11 @@ const Props = defineProps({
     llm_driver: {
         type: String,
         default: ""
-    }
+    },
+    active_llms: Array
 })
-const PageProps = usePage().props
-
 const query = ref('')
-const selectedLlmDriver = ref(PageProps.active_llms.find((driver) => {
+const selectedLlmDriver = ref(Props.active_llms.find((driver) => {
     return driver.title.toLowerCase().includes(Props.modelValue.toLowerCase())
 }));
 watch(
@@ -80,8 +79,8 @@ watch(
 );
 const filteredLlmDriver = computed(() =>
     query.value === ''
-        ? PageProps.active_llms
-        : PageProps.active_llms.filter((driver) => {
+        ? Props.active_llms
+        : Props.active_llms.filter((driver) => {
             return driver.title.toLowerCase().includes(query.value.toLowerCase())
         }),
 )
