@@ -39,9 +39,4 @@ class ProcessPendingTool implements ShouldQueue
             ]);
         }
     }
-
-//    public function middleware(): array
-//    {
-//        return [(new WithoutOverlapping('message.'.$this->assistanceMessage->id))->dontRelease()];
-//    }
 }

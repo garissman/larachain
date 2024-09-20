@@ -51,14 +51,11 @@ class ProcessPendingResponse implements ShouldQueue
                             'args' => $tool_call->arguments,
                         ]);
                 $tool->handle($toolMessage, $response->assistanceMessage, $tool_call->arguments);
-//                if (!$this->batch()->cancelled()) {
-//                    $this->batch()->add([
-//                        new ProcessPendingTool($tool, $response->assistanceMessage, $toolMessage, $tool_call->arguments),
-////                        new ProcessPendingResponse($this->chat)
-//                    ]);
-//                }
-                $response = LaraChain::invoke($this->chat)
-                    ->chat();
+                if (!$this->batch()->cancelled()) {
+                    $this->batch()->add([
+                        new ProcessPendingTool($tool, $response->assistanceMessage, $toolMessage, $tool_call->arguments),
+                    ]);
+                }
             }
         }
     }
@@ -75,9 +72,4 @@ class ProcessPendingResponse implements ShouldQueue
             })
             ->first();
     }
-
-//    public function middleware(): array
-//    {
-//        return [(new WithoutOverlapping('chat.' . $this->chat->id))->dontRelease()];
-//    }
 }
