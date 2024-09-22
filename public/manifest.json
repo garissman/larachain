@@ -1,0 +1,51 @@
+{
+  "resources/js/Pages/Chat.vue": {
+    "file": "assets/Chat-DaOC0QkA.js",
+    "name": "Chat",
+    "src": "resources/js/Pages/Chat.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "resources/js/Pages/SelectDriver.vue",
+      "resources/js/Pages/ChatMessages.vue"
+    ],
+    "css": [
+      "assets/Chat-BQhLo6Kp.css"
+    ]
+  },
+  "resources/js/Pages/ChatMessages.vue": {
+    "file": "assets/ChatMessages-DH7YUvNK.js",
+    "name": "ChatMessages",
+    "src": "resources/js/Pages/ChatMessages.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/ChatMessages-BDXdp9kw.css"
+    ]
+  },
+  "resources/js/Pages/SelectDriver.vue": {
+    "file": "assets/SelectDriver-XMG75miA.js",
+    "name": "SelectDriver",
+    "src": "resources/js/Pages/SelectDriver.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CvGfV4CC.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/Pages/Chat.vue",
+      "resources/js/Pages/ChatMessages.vue",
+      "resources/js/Pages/SelectDriver.vue"
+    ],
+    "css": [
+      "assets/app-BMIGGYq3.css"
+    ]
+  }
+}
