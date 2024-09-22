@@ -1,10 +1,10 @@
 <?php
 
+use Garissman\LaraChain\Models\Agent;
+use Garissman\LaraChain\Structures\Enums\ChatStatuesEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Models\Agent;
-use Structures\Enums\ChatStatuesEnum;
 
 return new class extends Migration
 {
