@@ -11,7 +11,7 @@ Chatbot using LLM Models to support your product made with Laravel.
 After installing, you should publish the configuration file using the vendor:publish Artisan command. This
 command will publish the configuration file to your application's config directory:
 
-`php artisan larachain:install`
+`php artisan vendor:publish --provider="Garissman\LaraChain\LaraChainServiceProvider"`
 
 ## Using Ollama(Free)
 
