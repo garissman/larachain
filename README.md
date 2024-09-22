@@ -13,13 +13,19 @@ command will publish the configuration file to your application's config directo
 
 `php artisan larachain:install`
 
-## Lets install Ollama
+## Using Ollama(Free)
 ----
 Go to https://ollama.com/ and follow there instructions
 
 ones installed, download the model, at this moment the model that works with function for me is mistral-nemo su run:
 
 `ollama pull mistral-nemo`
+
+## Using OpenAi(ChatGPT)
+----
+Just get your API key in: https://platform.openai.com/api-keys
+
+and set you OPENAI_API_KEY in the .env file
 
 ## Create the Default Agent
 ----
