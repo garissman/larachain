@@ -72,8 +72,9 @@ also has a description as well, very important.
 
 ## TODO 
 
-- make Function command and use RAG for the description
-- make Agent command and use RAG for the context
+- make Function command and use RAG for the description.
+- make Agent command and use RAG for the context.
+- Knowledge Table.
 - Tests, nothing new!!!
 
 
