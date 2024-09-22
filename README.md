@@ -54,6 +54,30 @@ Now you are ready to chat,
 
 http://localhost:8000/larachain/chat
 
+## Create your tools
+----
+Now let's do actual coding, tools are the reason why y made this package, 
+are custom code triggers by the chain and let the LLM model do the RAG 
+base on that function output,
+
+create a Class that extend from Garissman\LaraChain\Structures\Classes\FunctionContract,
+
+like Garissman\LaraChain\Functions\ExampleTool
+
+The Description is the most important part of the function, 
+it tells the LLM when to trigger the tool call and start asking por parameter
+
+The properties are the parameter of your too, it tells the LLM what is the parameter, 
+also has a description as well, very important.
+
+## Todo make Function command and use RAG for the description
+## Todo make Agent command and use RAG for the context
+
+
+`php artisan serve`
+
+http://localhost:8000/larachain/chat
+
 
 ## TODO 
 ---
