@@ -65,7 +65,7 @@ create a Class that extend from Garissman\LaraChain\Structures\Classes\FunctionC
 like Garissman\LaraChain\Functions\ExampleTool
 
 The Description is the most important part of the function, 
-it tells the LLM when to trigger the tool call and start asking por parameter
+it tells the LLM when to trigger the tool call and start asking for parameter
 
 The properties are the parameter of your too, it tells the LLM what is the parameter, 
 also has a description as well, very important.
