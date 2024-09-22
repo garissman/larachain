@@ -158,7 +158,7 @@ onMounted(() => {
             <header
                 class="p-4 border-b border-gray-300 flex justify-between items-center bg-indigo-600 text-white"
             >
-                <h1 class="text-2xl justify-center font-semibold">TwAina</h1>
+                <h1 class="text-2xl justify-center font-semibold">LaraChain</h1>
                 <Link :href="route('guest.chats.new')">New Chat</Link>
             </header>
             <!-- Contact List -->
