@@ -13,6 +13,40 @@ command will publish the configuration file to your application's config directo
 
 `php artisan larachain:install`
 
-
-## TODO More doc about models
+## Lets install Ollama
 ----
+Go to https://ollama.com/ and follow there instructions
+
+ones installed, download the model, at this moment the model that works with function for me is mistral-nemo su run:
+
+`ollama pull mistral-nemo`
+
+## Create the Default Agent
+----
+This is important to give personality to your char bot
+
+`php artisan larachain:create_default_agent`
+
+## Install Horizon
+----
+Go to https://laravel.com/docs/11.x/horizon and follow there instructions, after install run:
+
+`php artisan horizon`
+
+## Install Reverb
+----
+Go to https://laravel.com/docs/11.x/reverb and follow there instructions, after install run:
+
+`php artisan reverb:start --debug`
+
+
+## Go to the UI and Chat with your bot
+----
+Now you are ready to chat,
+
+`php artisan serve`
+
+http://localhost:8000/larachain/chat
+
+
+
