@@ -72,7 +72,6 @@ also has a description as well, very important.
 
 ## TODO 
 
-Guess,
 - make Function command and use RAG for the description
 - make Agent command and use RAG for the context
 - Tests, nothing new!!!
