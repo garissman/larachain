@@ -1,6 +1,6 @@
 # Your chat bot to support your Laravel Product
 ----
-Chat bot Clerk to support your product made with Laravel.
+Chatbot using LLM Models to support your product made with Laravel.
 
 ## Installation
 ----
