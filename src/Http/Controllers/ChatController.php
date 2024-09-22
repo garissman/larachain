@@ -35,7 +35,7 @@ class ChatController extends Controller
                 "key"=>$name
             ];
         }
-        return inertia('Chat', [
+        return inertia('vendor/LaraChain/Chat', [
             'chats' => Chat::orderBy('updated_at', 'desc')
                 ->with([
                     'messages' => fn($q) => $q->notSystem()

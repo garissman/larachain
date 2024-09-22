@@ -1,8 +1,8 @@
 <script setup>
 import {onMounted, reactive, ref, watch} from "vue";
 import {Link, router} from '@inertiajs/vue3'
-import SelectDriver from "@/Pages/SelectDriver.vue";
-import ChatMessages from "@/Pages/ChatMessages.vue";
+import SelectDriver from "@/Pages/vendor/LaraChain/SelectDriver.vue";
+import ChatMessages from "@/Pages/vendor/LaraChain/ChatMessages.vue";
 
 const Props = defineProps({
     chats: Object,

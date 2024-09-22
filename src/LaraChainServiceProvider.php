@@ -48,18 +48,30 @@ class LaraChainServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/larachain.php' => config_path('larachain.php'),
-            ], 'larachain-config');
-            $publishesMigrationsMethod = method_exists($this, 'publishesMigrations')
-                ? 'publishesMigrations'
-                : 'publishes';
+            ], ['larachain', 'larachain-config']);
+            $method = method_exists($this, 'publishesMigrations') ? 'publishesMigrations' : 'publishes';
 
-            $this->{$publishesMigrationsMethod}([
+            $this->{$method}([
                 __DIR__ . '/../database/migrations' => database_path('migrations'),
-            ], 'larachain-migrations');
+            ], ['larachain', 'larachain-migrations']);
 
             $this->publishes([
                 __DIR__ . '/../public' => public_path('vendor/larachain'),
-            ], ['larachain-assets']);
+            ], ['larachain', 'larachain-assets', 'laravel-assets']);
+            $this->publishes([
+                __DIR__ . '/../resources/views/app.blade.php' => resource_path('views/vendor/larachain/app.blade.php'),
+            ], ['larachain', 'larachain-view']);
+            $this->publishes([
+                __DIR__ . '/../resources/js/Pages/Chat.vue' => resource_path('js/Pages/vendor/LaraChain/Chat.vue'),
+            ], ['larachain', 'larachain-chat-component']);
+
+            $this->publishes([
+                __DIR__ . '/../resources/js/Pages/ChatMessages.vue' => resource_path('js/Pages/vendor/LaraChain/ChatMessages.vue'),
+            ], ['larachain', 'larachain-chat-message-component']);
+
+            $this->publishes([
+                __DIR__ . '/../resources/js/Pages/SelectDriver.vue' => resource_path('js/Pages/vendor/LaraChain/SelectDriver.vue'),
+            ], ['larachain', 'larachain-chat-select-driver-component']);
         }
     }
 
