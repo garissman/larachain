@@ -70,18 +70,12 @@ it tells the LLM when to trigger the tool call and start asking por parameter
 The properties are the parameter of your too, it tells the LLM what is the parameter, 
 also has a description as well, very important.
 
-## Todo make Function command and use RAG for the description
-## Todo make Agent command and use RAG for the context
-
-
-`php artisan serve`
-
-http://localhost:8000/larachain/chat
-
-
 ## TODO 
 
-Guess, Tests, nothing new!!! 
+Guess,
+- make Function command and use RAG for the description
+- make Agent command and use RAG for the context
+- Tests, nothing new!!!
 
 
 
