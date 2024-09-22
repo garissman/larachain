@@ -1,7 +1,7 @@
 {
     "name": "garissman/larachain",
     "description": "larachain",
-    "type": "project",
+    "keywords": ["laravel", "LLM", "ChatBot"],
     "license": "MIT",
     "authors": [
         {
