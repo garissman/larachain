@@ -1,7 +1,7 @@
 <?php
 
 
-use Garissman\LaraChain\Functions\GetOrderStatusTool;
+use Garissman\LaraChain\Functions\ExampleTool;
 
 return [
     'driver' => 'openai',
@@ -24,16 +24,16 @@ return [
             'api_url' => env('OLLAMA_API_URL', 'http://localhost:11434/api/'),
             'models' => [
                 //@see https://github.com/ollama/ollama/blob/main/docs/openai.md
-                'completion_model' => env('OLLAMA_COMPLETION_MODEL', 'llama3.1'),
+                'completion_model' => env('OLLAMA_COMPLETION_MODEL', 'mistral-nemo'),
                 'embedding_model' => env('OLLAMA_EMBEDDING_MODEL', 'mxbai-embed-large'),
-                'chat_output_model' => env('OLLAMA_COMPLETION_MODEL', 'llama3.1'), //this is good to use other systems for better repsonses to people in chat
+                'chat_output_model' => env('OLLAMA_COMPLETION_MODEL', 'mistral-nemo'), //this is good to use other systems for better repsonses to people in chat
             ],
         ],
     ],
-    'path'=>'larachain',
+    'path' => 'larachain',
     'middleware' => ['web'],
     'tools' => [
-        GetOrderStatusTool::class
+        ExampleTool::class
     ],
 
 ];

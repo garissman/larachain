@@ -10,7 +10,6 @@ use Garissman\LaraChain\Structures\Classes\Responses\FunctionResponse;
 use Garissman\LaraChain\Structures\Enums\ToolTypes;
 use Garissman\LaraChain\Structures\Traits\ChatHelperTrait;
 use Garissman\LaraChain\Structures\Traits\ToolsHelper;
-use Illuminate\Support\Facades\Log;
 
 class ExampleTool extends FunctionContract
 {
@@ -25,21 +24,25 @@ class ExampleTool extends FunctionContract
         ToolTypes::Source,
         ToolTypes::Output,
     ];
-    protected string $description = 'Trigger this intent if user ask a his email.';
+    protected string $description = 'Trigger this intent if user ask to user the example tool.';
 
-    public function handle(Message $message, $arguments = []): FunctionResponse
+    public function handle(
+        Message $toolMessage,
+        Message $assistanceMessage,
+                $arguments = []
+    ): FunctionResponse
     {
-        $args = $message->args;
+        $args = $toolMessage->args;
 
-        $email = data_get($args, 'email', null);
+        $name = data_get($args, 'name', '');
 
         // Do SomeThing
-        $message->body = 'Here is your Email '.$email;
-        $message->save();
+        $toolMessage->body = 'Here is your Email ' . $name;
+        $toolMessage->save();
 
         return FunctionResponse::from([
-            'content' => $message->body,
-            'prompt' => $message->body,
+            'content' => $toolMessage->body,
+            'prompt' => $toolMessage->body,
             'requires_followup' => false,
             'documentChunks' => collect([]),
             'save_to_message' => false,
@@ -53,8 +56,8 @@ class ExampleTool extends FunctionContract
     {
         return [
             new PropertyDto(
-                name: 'email',
-                description: 'Email of the user',
+                name: 'name',
+                description: 'User Name',
                 type: 'string',
                 required: true,
             ),
