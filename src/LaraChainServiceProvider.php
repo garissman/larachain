@@ -56,22 +56,8 @@ class LaraChainServiceProvider extends ServiceProvider
             ], ['larachain', 'larachain-migrations']);
 
             $this->publishes([
-                __DIR__ . '/../public' => public_path('vendor/larachain'),
-            ], ['larachain', 'larachain-assets']);
-            $this->publishes([
-                __DIR__ . '/../resources/views/app.blade.php' => resource_path('views/vendor/larachain/app.blade.php'),
-            ], ['larachain', 'larachain-view']);
-            $this->publishes([
-                __DIR__ . '/../resources/js/Pages/Chat.vue' => resource_path('js/Pages/vendor/LaraChain/Chat.vue'),
+                __DIR__ . '/../resources/js/Pages/vendor/LaraChain' => resource_path('js/Pages/vendor/LaraChain'),
             ], ['larachain', 'larachain-chat-component']);
-
-            $this->publishes([
-                __DIR__ . '/../resources/js/Pages/ChatMessages.vue' => resource_path('js/Pages/vendor/LaraChain/ChatMessages.vue'),
-            ], ['larachain', 'larachain-chat-message-component']);
-
-            $this->publishes([
-                __DIR__ . '/../resources/js/Pages/SelectDriver.vue' => resource_path('js/Pages/vendor/LaraChain/SelectDriver.vue'),
-            ], ['larachain', 'larachain-chat-select-driver-component']);
         }
     }
 
