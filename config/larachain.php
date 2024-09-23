@@ -10,6 +10,7 @@ return [
         'openai' => [
             'api_key' => env('OPENAI_API_KEY'),
             'api_url' => env('OPENAI_API_URL', 'https://api.openai.com/v1'),
+            'stream'=> env('OPENAI_STREAM', false),
             'models' => [
                 'embedding_model' => env('OPENAI_EMBEDDING_MODEL', 'text-embedding-3-large'),
                 'completion_model' => env('OPENAI_COMPLETION_MODEL', 'gpt-4o'),
@@ -22,6 +23,7 @@ return [
             ],
             'api_key' => 'ollama',
             'api_url' => env('OLLAMA_API_URL', 'http://localhost:11434/api/'),
+            'stream'=> env('OLLAMA_STREAM', false),
             'models' => [
                 //@see https://github.com/ollama/ollama/blob/main/docs/openai.md
                 'completion_model' => env('OLLAMA_COMPLETION_MODEL', 'mistral-nemo'),
