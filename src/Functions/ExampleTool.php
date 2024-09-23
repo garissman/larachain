@@ -39,6 +39,7 @@ class ExampleTool extends FunctionContract
 
         // Do SomeThing
         $assistanceMessage->role=RoleEnum::Tool;
+        // Do some RAG with this message
         $assistanceMessage->body = 'Let me take a look';
         $assistanceMessage->is_been_whisper = false;
         $assistanceMessage->is_chat_ignored = false;
