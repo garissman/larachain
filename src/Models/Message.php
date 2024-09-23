@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\Bus;
  * @property array $args
  * @property bool $is_been_whisper
  * @property bool $is_chat_ignored
+ * @property string $tool_name
+ * @property string $tool_id
  *
  * @method static where(string $string, mixed $get)
  */
