@@ -47,7 +47,7 @@ class EngineManager extends Manager
         if (!config('larachain.drivers.openai.api_key', false)) {
             throw new Exception('OpenAi API Token is empty');
         }
-        $this->ensureOpenAiClientIsInstalled();
+//        $this->ensureOpenAiClientIsInstalled();
 
         return new OpenAiEngine();
     }
