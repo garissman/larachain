@@ -57,7 +57,7 @@ class LaraChainServiceProvider extends ServiceProvider
 
             $this->publishes([
                 __DIR__ . '/../public' => public_path('vendor/larachain'),
-            ], ['larachain', 'larachain-assets', 'laravel-assets']);
+            ], ['larachain', 'larachain-assets']);
             $this->publishes([
                 __DIR__ . '/../resources/views/app.blade.php' => resource_path('views/vendor/larachain/app.blade.php'),
             ], ['larachain', 'larachain-view']);
