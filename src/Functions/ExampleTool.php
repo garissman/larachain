@@ -7,6 +7,7 @@ use Garissman\LaraChain\Models\Message;
 use Garissman\LaraChain\Structures\Classes\FunctionContract;
 use Garissman\LaraChain\Structures\Classes\PropertyDto;
 use Garissman\LaraChain\Structures\Classes\Responses\FunctionResponse;
+use Garissman\LaraChain\Structures\Enums\RoleEnum;
 use Garissman\LaraChain\Structures\Enums\ToolTypes;
 use Garissman\LaraChain\Structures\Traits\ChatHelperTrait;
 use Garissman\LaraChain\Structures\Traits\ToolsHelper;
@@ -37,8 +38,14 @@ class ExampleTool extends FunctionContract
         $name = data_get($args, 'name', '');
 
         // Do SomeThing
+        $assistanceMessage->role=RoleEnum::Tool;
+        $assistanceMessage->body = 'Let me take a look';
+        $assistanceMessage->is_been_whisper = false;
+        $assistanceMessage->is_chat_ignored = false;
+
         $toolMessage->body = 'Here is your Email ' . $name;
         $toolMessage->save();
+        $assistanceMessage->save();
 
         return FunctionResponse::from([
             'content' => $toolMessage->body,
