@@ -9,35 +9,35 @@ const toHtml = (body) => {
 </script>
 <template>
     <div v-for="message in messages">
-        <!-- Incoming Message -->
         <div
             v-if="message.role==='assistant'"
-            class="flex mb-4 cursor-pointer"
+            class="flex mb-4"
         >
+            <!-- Incoming Message -->
             <div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
                 <img alt="User Avatar" class="w-8 h-8 rounded-full"
                      src="https://placehold.co/200x/4f46e5/ffffff.svg?text=TwAina&font=Lato">
             </div>
-            <div class="max-w-96 bg-white rounded-lg p-3 gap-3">
-                <div class="text-gray-700"
+            <div class="max-w-96 bg-green-500 rounded-lg p-3 gap-3">
+                <div class="text-white text-xl"
                      v-html="toHtml(message.body)"
                 />
                 <div
                     v-if="message.is_been_whisper"
                     class="wave"
                 >
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
+                    <span class="dot bg-white"></span>
+                    <span class="dot bg-white"></span>
+                    <span class="dot bg-white"></span>
                 </div>
             </div>
         </div>
-        <!-- Outgoing Message -->
         <div
             v-if="message.role==='user'"
-            class="flex justify-end mb-4 cursor-pointer"
+            class="flex justify-end mb-4"
         >
-            <div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+            <!-- Outgoing Message -->
+            <div class="flex max-w-96 bg-indigo-500 text-xl text-white rounded-lg p-3 gap-3">
                 <p>
                     {{ message.body }}
                 </p>
@@ -57,13 +57,10 @@ div.wave {
         height:5px;
         border-radius:50%;
         margin-right:3px;
-        background:#4f46e5;
         animation: wave 1.3s linear infinite;
-
         &:nth-child(2) {
             animation-delay: -1.1s;
         }
-
         &:nth-child(3) {
             animation-delay: -0.9s;
         }
