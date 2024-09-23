@@ -23,6 +23,7 @@ return new class extends Migration
             $table->json('tools')->nullable();
             $table->string('tool_name')->nullable();
             $table->string('tool_id')->nullable();
+            $table->json('args')->nullable();
             $table->string('driver')->nullable();
             $table->boolean('is_been_whisper')->default(0);
             $table->boolean('in_out')->default(0);
