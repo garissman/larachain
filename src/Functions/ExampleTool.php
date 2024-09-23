@@ -42,7 +42,11 @@ class ExampleTool extends FunctionContract
         // Do some RAG with this message
         $assistanceMessage->body = 'Let me take a look';
         $assistanceMessage->is_been_whisper = false;
-        $assistanceMessage->is_chat_ignored = false;
+        $assistanceMessage->is_chat_ignored=true;
+        $assistanceMessage->tool_name = $toolMessage->tool_name;
+        $assistanceMessage->tool_id= $toolMessage->tool_id;
+        $assistanceMessage->args= $toolMessage->args;
+        $assistanceMessage->save();
 
         $toolMessage->body = 'Here is your Email ' . $name;
         $toolMessage->save();
