@@ -17,7 +17,7 @@ command will publish the configuration file to your application's config directo
 
 Go to https://ollama.com/ and follow there instructions
 
-ones installed, download the model, at this moment the model that works with function for me is mistral-nemo su run:
+ones installed, download the model, at this moment the model that works with function for me is mistral-nemo so run:
 
 `ollama pull mistral-nemo`
 
