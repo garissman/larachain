@@ -37,14 +37,16 @@ class ProcessTextFilesJob implements ShouldQueue
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been canceled...
-
             return;
         }
         $document = $this->document;
 
-        $filePath = Storage::url($this->document->file_path);
-
-        $content = File::get($filePath);
+        if ($this->document->file_path) {
+            $filePath = Storage::url($this->document->file_path);
+            $content = File::get($filePath);
+        }else{
+            $content = $this->document->content;
+        }
 
         $document->update([
             'summary' => $content,
@@ -79,11 +81,10 @@ class ProcessTextFilesJob implements ShouldQueue
             } catch (\Exception $e) {
                 Log::error('Error parsing Text', ['error' => $e->getMessage()]);
             }
-
         }
 
         Bus::batch($jobs)
-            ->name("Chunking Document - $document->file_path")
+            ->name("Chunking Document - $document->id")
             ->finally(function (Batch $batch) use ($document) {
                 TagDocumentJob::dispatch($document);
                 DocumentProcessingCompleteJob::dispatch($document);

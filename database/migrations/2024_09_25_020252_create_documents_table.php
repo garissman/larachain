@@ -27,6 +27,7 @@ return new class extends Migration {
             $table->longText('link')->nullable();
             $table->foreignIdFor(Document::class, 'parent_id')->nullable();
             $table->string('child_type')->nullable();
+            $table->longText('content')->nullable();
             $table->longText('original_content')->nullable();
             $table->string('document_md5')->nullable();
             $table->timestamps();

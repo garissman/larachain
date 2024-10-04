@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property StructuredTypeEnum $child_type
  * @property string $document_driver
  * @property string $embedding_driver
+ * @property string|null $content
  *
  */
 #[ObservedBy([DocumentObserver::class])]

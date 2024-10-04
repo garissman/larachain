@@ -46,14 +46,10 @@ class OllamaClient extends BaseClient
             $message->is_been_whisper = false;
             $message->save();
         }
-        $return['assistanceMessage']=$message;
+        $return['assistanceMessage'] = $message;
         $return = OllamaChatCompletionResponse::from($return);
         return $return;
 
-    }
-    public function processStreamLine(string $line): string
-    {
-        return $line;
     }
 
     /**
@@ -85,7 +81,10 @@ class OllamaClient extends BaseClient
             ->baseUrl($baseUrl);
     }
 
-
+    public function processStreamLine(string $line): string
+    {
+        return $line;
+    }
 
     /**
      * @throws ConnectionException
@@ -93,12 +92,11 @@ class OllamaClient extends BaseClient
      */
     public function embedData(string $prompt): EmbeddingsResponseDto
     {
-        Log::info('LlmDriver::Ollama::embedData');
-
-        $response = $this->getClient()->post('/embeddings', [
-            'model' => config('larachain.drivers.ollama.models.embedding_model'),
-            'prompt' => $prompt,
-        ]);
+        $response = $this->getClient()
+            ->post('/embeddings', [
+                'model' => config('larachain.drivers.ollama.models.embedding_model'),
+                'prompt' => $prompt,
+            ]);
 
         $results = $response->json();
         return EmbeddingsResponseDto::from([
@@ -113,7 +111,6 @@ class OllamaClient extends BaseClient
         //$payload['format'] = 'json';
         return $payload;
     }
-
 
 
     /**
