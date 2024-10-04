@@ -1,10 +1,12 @@
 <?php
 
-namespace Garissman\Larachain\Structures\Classes;
+namespace Garissman\LaraChain\Structures\Classes;
 
 
+use Garissman\LaraChain\Facades\LaraChain;
+use Garissman\LaraChain\Models\Document;
+use Garissman\LaraChain\Structures\Classes\Responses\CompletionResponse;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 
 class TagManager
 {
@@ -14,16 +16,14 @@ class TagManager
 
     public function handle(Document $document): void
     {
-        if (! $document->summary) {
+        if (!$document->summary) {
             return;
         }
-
-        Log::info('[LaraChain] TagManager Tagging document');
         $summary = $document->summary;
         $prompt = TagPrompt::prompt($summary);
 
         /** @var CompletionResponse $response */
-        $response = LlmDriverFacade::driver($document->getDriver())
+        $response = LaraChain::engine($document->getDriver())
             ->completion(
                 prompt: $prompt
             );

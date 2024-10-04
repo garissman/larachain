@@ -1,6 +1,6 @@
 <?php
 
-namespace LlmLaraHub\TagFunction;
+namespace Garissman\LaraChain\Structures\Classes;
 
 class TagPrompt
 {

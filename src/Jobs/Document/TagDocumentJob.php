@@ -4,13 +4,13 @@ namespace Garissman\LaraChain\Jobs\Document;
 
 
 use Garissman\LaraChain\Models\Document;
+use Garissman\LaraChain\Structures\Classes\TagManager;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use LlmLaraHub\TagFunction\TagManager;
 
 class TagDocumentJob implements ShouldQueue
 {
@@ -35,6 +35,6 @@ class TagDocumentJob implements ShouldQueue
             return;
         }
 
-        TagManager::handle($this->document);
+        (new TagManager)->handle($this->document);
     }
 }

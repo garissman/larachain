@@ -2,16 +2,15 @@
 
 namespace Garissman\LaraChain\Jobs\Document;
 
-use App\Domains\Collections\CollectionStatusEnum;
-use App\Domains\Documents\StatusEnum;
-use App\Models\Document;
+
+use Garissman\LaraChain\Models\Document;
+use Garissman\LaraChain\Structures\Enums\StatusEnum;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use function App\Jobs\notify_collection_ui;
 
 class DocumentProcessingCompleteJob implements ShouldQueue
 {
@@ -22,7 +21,6 @@ class DocumentProcessingCompleteJob implements ShouldQueue
      */
     public function __construct(public Document $document)
     {
-        $this->onQueue('default');
     }
 
     /**
@@ -37,8 +35,5 @@ class DocumentProcessingCompleteJob implements ShouldQueue
             'status' => StatusEnum::Complete,
             'document_chunk_count' => $count,
         ]);
-
-        notify_collection_ui($this->document->collection, CollectionStatusEnum::PROCESSED, 'Document Processed');
-
     }
 }

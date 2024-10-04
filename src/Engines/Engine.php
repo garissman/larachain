@@ -112,6 +112,11 @@ abstract class Engine
         return $this->client
             ->embedData($prompt);
     }
+    public function completion($prompt): EmbeddingsResponseDto
+    {
+        return $this->client
+            ->completion($prompt);
+    }
 
     public function isAsync(): bool
     {
