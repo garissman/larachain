@@ -5,11 +5,9 @@ namespace Garissman\LaraChain\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Garissman\LaraChain\Facades\LaraChain;
-use Garissman\LaraChain\Jobs\ProcessPendingResponse;
 use Garissman\LaraChain\Models\Agent;
 use Garissman\LaraChain\Models\Chat;
 use Garissman\LaraChain\Models\Message;
-use Garissman\LaraChain\Structures\Enums\ChatStatuesEnum;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -31,8 +29,8 @@ class ChatController extends Controller
         $active_llms = [];
         foreach ($drivers as $name => $driver) {
             $active_llms[] = [
-                "title"=>$name,
-                "key"=>$name
+                "title" => $name,
+                "key" => $name
             ];
         }
         return inertia('vendor/LaraChain/Chat', [

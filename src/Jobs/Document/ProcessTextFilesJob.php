@@ -40,49 +40,36 @@ class ProcessTextFilesJob implements ShouldQueue
             return;
         }
         $document = $this->document;
-
         if ($this->document->file_path) {
-            $filePath = Storage::url($this->document->file_path);
-            $content = File::get($filePath);
+            $content = Storage::get($this->document->file_path);
         }else{
             $content = $this->document->content;
         }
-
         $document->update([
             'summary' => $content,
             'original_content' => $content,
         ]);
-
         $jobs = [];
-
         $page_number = 1;
         $chunked_chunks = TextChunker::handle($content);
-
         foreach ($chunked_chunks as $chunkSection => $chunkContent) {
-
-            try {
-                $guid = md5($chunkContent);
-                $DocumentChunk = DocumentChunk::updateOrCreate(
-                    [
-                        'document_id' => $document->id,
-                        'sort_order' => $page_number,
-                        'section_number' => $chunkSection,
-                    ],
-                    [
-                        'guid' => $guid,
-                        'content' => $chunkContent,
-                        'sort_order' => $page_number,
-                    ]
-                );
-
-                $jobs[] = [
-                    new VectorlizeDataJob($DocumentChunk),
-                ];
-            } catch (\Exception $e) {
-                Log::error('Error parsing Text', ['error' => $e->getMessage()]);
-            }
+            $guid = md5($chunkContent);
+            $DocumentChunk = DocumentChunk::updateOrCreate(
+                [
+                    'document_id' => $document->id,
+                    'sort_order' => $page_number,
+                    'section_number' => $chunkSection,
+                ],
+                [
+                    'guid' => $guid,
+                    'content' => $chunkContent,
+                    'sort_order' => $page_number,
+                ]
+            );
+            $jobs[] = [
+                new VectorlizeDataJob($DocumentChunk),
+            ];
         }
-
         Bus::batch($jobs)
             ->name("Chunking Document - $document->id")
             ->finally(function (Batch $batch) use ($document) {
@@ -91,6 +78,5 @@ class ProcessTextFilesJob implements ShouldQueue
             })
             ->allowFailures()
             ->dispatch();
-
     }
 }

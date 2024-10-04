@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\DB;
  * @property Collection|Message[] $messages
  * @property mixed $title
  * @property string $embedding_driver
- * @property mixed $chat_driver
+ * @property string $chat_driver
  * @property Agent $agent
  * @method static whereNull(string $string)
  * @method static find(mixed $chat_id)
@@ -116,5 +116,15 @@ class Chat extends Model implements HasDrivers
     public function latest_messages(): HasMany
     {
         return $this->hasMany(Message::class)->where('is_chat_ignored', false)->oldest();
+    }
+
+    function getDriver(): string
+    {
+        return $this->chat_driver;
+    }
+
+    function getEmbeddingDriver(): string
+    {
+        return $this->embedding_driver;
     }
 }

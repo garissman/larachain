@@ -138,4 +138,14 @@ class Message extends Model implements HasDrivers
     {
         return $this->chat->getChatable();
     }
+
+    function getDriver(): string
+    {
+        return $this->chat->chat_driver;
+    }
+
+    function getEmbeddingDriver(): string
+    {
+        return $this->chat->embedding_driver;
+    }
 }

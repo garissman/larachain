@@ -3,6 +3,7 @@
 namespace Garissman\LaraChain\Models;
 
 
+use Garissman\LaraChain\Facades\LaraChain;
 use Garissman\LaraChain\Structures\Enums\StatusEnum;
 use Garissman\LaraChain\Structures\Enums\StructuredTypeEnum;
 use Garissman\LaraChain\Structures\Interfaces\HasDrivers;
@@ -95,9 +96,8 @@ class DocumentChunk extends Model implements HasDrivers, TaggableContract
 
     public function getEmbeddingColumn(): string
     {
-
-        return get_embedding_size($this->getEmbeddingDriver());
-
+        $size=LaraChain::engine($this->getDriver())->getEmbeddingSize();
+        return 'embedding_'.$size;
     }
 
     public function getEmbeddingDriver(): string

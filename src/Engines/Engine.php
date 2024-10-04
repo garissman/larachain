@@ -122,4 +122,8 @@ abstract class Engine
     {
         return $this->client->isAsync();
     }
+    public function getEmbeddingSize(): int
+    {
+        return $this->client->getEmbeddingSize();
+    }
 }

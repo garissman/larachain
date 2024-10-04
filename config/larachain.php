@@ -34,8 +34,19 @@ return [
             'async'=>env('OLLAMA_ASYNC', false),
         ],
     ],
+    'embedding_sizes' => [
+        'mock' => 4096,
+        'text-embedding-3-large' => 3072,
+        'text-embedding-3-medium' => 768,
+        'text-embedding-3-small' => 384,
+        'ollama' => 4096,
+        'llama2' => 4096,
+        'llama3' => 4096,
+        'mistral' => 4096,
+        'mxbai-embed-large' => 1024,
+    ],
     'path' => 'larachain',
-    'middleware' => ['web'],
+    'middleware' => [],
     'tools' => [
         ExampleTool::class
     ],

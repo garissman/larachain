@@ -65,12 +65,12 @@ class VectorlizeDataJob implements ShouldQueue
 
         $results = LaraChain::engine($this->documentChunk->getEmbeddingDriver())
             ->embedData($content);
-
         $embedding_column = $this->documentChunk->getEmbeddingColumn();
-
+        $embedding=$results->embedding;
         $this->documentChunk->update([
-            $embedding_column => $results->embedding,
+            $embedding_column => $embedding,
             'status_embeddings' => StatusEnum::Complete,
         ]);
+        $this->documentChunk->save();
     }
 }

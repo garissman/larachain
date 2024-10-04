@@ -186,4 +186,10 @@ abstract class BaseClient
         return config('larachain.drivers.'.$this->driver.'.async', false);
     }
 
+    public function getEmbeddingSize(): int
+    {
+        $embedding_model=config('larachain.drivers.'.$this->driver.'.models.embedding_model', 3072);
+        return config('larachain.embedding_sizes.'.$embedding_model, 3072);
+    }
+
 }

@@ -91,6 +91,12 @@ class LaraChainServiceProvider extends ServiceProvider
         ], function () {
             $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         });
+        Route::group([
+            'prefix' => 'api/'.config('larachain.path'),
+//            'middleware' => config('larachain.middleware', []),
+        ], function () {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
+        });
     }
 
     /**

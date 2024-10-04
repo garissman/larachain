@@ -33,7 +33,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property string|null $content
  *
  */
-#[ObservedBy([DocumentObserver::class])]
+//#[ObservedBy([DocumentObserver::class])]
 class Document extends Model implements HasDrivers, TaggableContract
 {
     use HasDriversTrait;
