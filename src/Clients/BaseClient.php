@@ -7,7 +7,7 @@ use Garissman\LaraChain\Models\Message;
 use Garissman\LaraChain\Structures\Classes\FunctionContract;
 use Garissman\LaraChain\Structures\Classes\FunctionDto;
 use Garissman\LaraChain\Structures\Classes\Responses\CompletionResponse;
-use Garissman\LaraChain\Structures\Enums\RoleEnum;
+use Garissman\LaraChain\Structures\Classes\Responses\EmbeddingsResponseDto;
 use Garissman\LaraChain\Structures\Enums\ToolTypes;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -31,7 +31,9 @@ abstract class BaseClient
     protected ?FunctionDto $forceTool = null;
 
     abstract function chat(array $messages, Message $message): CompletionResponse;
-    abstract function processStreamLine(string $line):string;
+
+    abstract public function embedData(string $prompt): EmbeddingsResponseDto;
+
     public function streamOutput($body, Message $message): array
     {
         $return = [];
@@ -42,7 +44,7 @@ abstract class BaseClient
             $response .= $body->getContents();
             $lines = explode("\n", $response);
             foreach ($lines as $line) {
-                $line=$this->processStreamLine($line);
+                $line = $this->processStreamLine($line);
                 $line = json_decode($line, true);
                 if ($line) {
                     $message->body = $content;
@@ -70,6 +72,7 @@ abstract class BaseClient
         return $return;
     }
 
+    abstract function processStreamLine(string $line): string;
 
     public function setSystemPrompt(string $systemPrompt = ''): self
     {
@@ -177,4 +180,10 @@ abstract class BaseClient
             return $message;
         })->toArray();
     }
+
+    public function isAsync(): bool
+    {
+        return config('larachain.drivers.'.$this->driver.'.async', false);
+    }
+
 }

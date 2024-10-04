@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @method static handle(Chat $chat, string $prompt, string $systemPrompt = '')
  * @method static OllamaEngine|NullEngine|OpenAiEngine invoke(Chat $chat)
+ * @method static OllamaEngine|NullEngine|OpenAiEngine engine(string $engine)
  */
 class LaraChain extends Facade
 {

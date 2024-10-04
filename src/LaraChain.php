@@ -29,6 +29,11 @@ class LaraChain
             ->engine($chat->chat_driver->value)
             ->setChat($chat);
     }
+    public function engine(string $driver): OllamaEngine|NullEngine|OpenAiEngine
+    {
+        return (new EngineManager($this->container))
+            ->engine($driver);
+    }
 
     /**
      * @throws \Throwable

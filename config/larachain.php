@@ -12,10 +12,11 @@ return [
             'api_url' => env('OPENAI_API_URL', 'https://api.openai.com/v1'),
             'stream'=> env('OPENAI_STREAM', false),
             'models' => [
-                'embedding_model' => env('OPENAI_EMBEDDING_MODEL', 'text-embedding-3-large'),
                 'completion_model' => env('OPENAI_COMPLETION_MODEL', 'gpt-4o'),
-                'chat_model' => env('OPENAICHAT_MODEL', 'gpt-4o'),
+                'embedding_model' => env('OPENAI_EMBEDDING_MODEL', 'text-embedding-3-large'),
+                'chat_model' => env('OPENAI_CHAT_MODEL', 'gpt-4o'),
             ],
+            'async'=>env('OPENAI_ASYNC', false),
         ],
         'ollama' => [
             'feature_flags' => [
@@ -28,8 +29,9 @@ return [
                 //@see https://github.com/ollama/ollama/blob/main/docs/openai.md
                 'completion_model' => env('OLLAMA_COMPLETION_MODEL', 'mistral-nemo'),
                 'embedding_model' => env('OLLAMA_EMBEDDING_MODEL', 'mxbai-embed-large'),
-                'chat_output_model' => env('OLLAMA_COMPLETION_MODEL', 'mistral-nemo'), //this is good to use other systems for better repsonses to people in chat
+                'chat_model' => env('OLLAMA_CHAT_MODEL', 'mistral-nemo'),
             ],
+            'async'=>env('OLLAMA_ASYNC', false),
         ],
     ],
     'path' => 'larachain',

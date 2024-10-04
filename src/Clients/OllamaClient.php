@@ -29,7 +29,7 @@ class OllamaClient extends BaseClient
         $messages = $this->remapMessages($messages);
         $stream = config('larachain.drivers.ollama.stream', false);
         $payload = [
-            'model' => config('larachain.drivers.ollama.models.completion_model'),
+            'model' => config('larachain.drivers.ollama.models.chat_model'),
             'messages' => $messages,
             'stream' => $stream,
             'options' => [
@@ -101,7 +101,6 @@ class OllamaClient extends BaseClient
         ]);
 
         $results = $response->json();
-
         return EmbeddingsResponseDto::from([
             'embedding' => data_get($results, 'embedding'),
             'token_count' => 1000,
@@ -115,30 +114,7 @@ class OllamaClient extends BaseClient
         return $payload;
     }
 
-    public function functionPromptChat(array $messages, array $only = []): array
-    {
-//        $messages = $this->insertFunctionsIntoMessageArray($messages);
-        $response = $this->getClient()->post('/chat', [
-            'model' => config('larachain.drivers.ollama.models.completion_model'),
-            'messages' => $messages,
-            'format' => 'json',
-            'stream' => false,
-        ]);
-        $results = $response->json()['message']['content'];
-        $functionsFromResults = json_decode($results, true);
-        $functions = []; //reset this
-        if ($functionsFromResults) {
-            if (
-                array_key_exists('arguments', $functionsFromResults) &&
-                array_key_exists('name', $functionsFromResults) &&
-                data_get($functionsFromResults, 'name') !== 'search_and_summarize') {
-                $functions[] = $functionsFromResults;
-            }
-        }
 
-
-        return $functions;
-    }
 
     /**
      * @return CompletionResponse[]

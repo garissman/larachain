@@ -8,6 +8,7 @@ use Garissman\LaraChain\Structures\Classes\MessageInDto;
 use Garissman\LaraChain\Structures\Classes\Responses\CompletionResponse;
 use Garissman\LaraChain\Structures\Enums\RoleEnum;
 use Garissman\LaraChain\Structures\Enums\ToolTypes;
+use Garissman\LaraChain\Structures\Classes\Responses\EmbeddingsResponseDto;
 
 abstract class Engine
 {
@@ -104,5 +105,16 @@ abstract class Engine
         $string = preg_replace('/\s+/', ' ', $string);
 
         return trim($string);
+    }
+
+    public function embedData($prompt): EmbeddingsResponseDto
+    {
+        return $this->client
+            ->embedData($prompt);
+    }
+
+    public function isAsync(): bool
+    {
+        return $this->client->isAsync();
     }
 }

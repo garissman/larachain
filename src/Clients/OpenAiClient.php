@@ -20,23 +20,29 @@ class OpenAiClient extends BaseClient
 
     protected string $driver = 'openai';
 
-    public function embedData(string $data): EmbeddingsResponseDto
+    public function embedData(string $prompt): EmbeddingsResponseDto
     {
+        $token = config('larachain.drivers.openai.api_key');
+        $payload=[
 
-        $response = OpenAI::embeddings()->create([
-            'model' => $this->getConfig('openai')['models']['embedding_model'],
-            'input' => $data,
-        ]);
-
+        ];
+        $response = Http::withHeaders([
+            'Content-type' => 'application/json',
+        ])
+            ->withToken($token)
+            ->baseUrl($this->baseUrl)
+            ->timeout(240)
+            ->post('embeddings', [
+                'model' => config('larachain.drivers.openai.models.embedding_model'),
+                'input' => $prompt,
+            ]);
         $results = [];
-
-        foreach ($response->embeddings as $embedding) {
-            $results = $embedding->embedding; // [0.018990106880664825, -0.0073809814639389515, ...]
+        foreach ($response->json()['data'] as $embedding) {
+            $results = $embedding['embedding'];
         }
-
         return EmbeddingsResponseDto::from([
             'embedding' => $results,
-            'token_count' => $response->usage->totalTokens,
+            'token_count' => $response->json()['usage']['total_tokens'],
         ]);
     }
 

@@ -12,7 +12,8 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "Garissman\\LaraChain\\": "src/"
+            "Garissman\\LaraChain\\": "src/",
+            "Garissman\\LaraChain\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
@@ -22,7 +23,8 @@
     },
     "require": {
         "spatie/laravel-data": "^4.4",
-        "guzzlehttp/guzzle": "^7.9"
+        "guzzlehttp/guzzle": "^7.9",
+        "pgvector/pgvector": "^0.2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.3"
