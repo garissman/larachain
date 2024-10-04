@@ -2,14 +2,15 @@
 
 namespace Garissman\LaraChain\Jobs\Document;
 
-use App\Models\Document;
-use Facades\LlmLaraHub\TagFunction\TagManager;
+
+use Garissman\LaraChain\Models\Document;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use LlmLaraHub\TagFunction\TagManager;
 
 class TagDocumentJob implements ShouldQueue
 {

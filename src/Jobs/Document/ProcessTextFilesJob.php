@@ -15,6 +15,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProcessTextFilesJob implements ShouldQueue
 {
@@ -35,13 +36,13 @@ class ProcessTextFilesJob implements ShouldQueue
     public function handle(): void
     {
         if ($this->batch()->cancelled()) {
-            // Determine if the batch has been cancelled...
+            // Determine if the batch has been canceled...
 
             return;
         }
         $document = $this->document;
 
-        $filePath = $this->document->pathToFile();
+        $filePath = Storage::url($this->document->file_path);
 
         $content = File::get($filePath);
 

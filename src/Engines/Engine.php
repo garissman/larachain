@@ -6,9 +6,9 @@ use Garissman\LaraChain\Clients\BaseClient;
 use Garissman\LaraChain\Models\Chat;
 use Garissman\LaraChain\Structures\Classes\MessageInDto;
 use Garissman\LaraChain\Structures\Classes\Responses\CompletionResponse;
+use Garissman\LaraChain\Structures\Classes\Responses\EmbeddingsResponseDto;
 use Garissman\LaraChain\Structures\Enums\RoleEnum;
 use Garissman\LaraChain\Structures\Enums\ToolTypes;
-use Garissman\LaraChain\Structures\Classes\Responses\EmbeddingsResponseDto;
 
 abstract class Engine
 {
