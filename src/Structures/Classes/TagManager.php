@@ -33,7 +33,7 @@ class TagManager
 
         $this->tags = collect(explode(',', $this->tagsAsString));
 
-        $this->tags->take(3)
+        $this->tags
             ->map(function ($tag) use ($document) {
                 $tag = str($tag)
                     ->remove('Here Are 3 Tags:')
