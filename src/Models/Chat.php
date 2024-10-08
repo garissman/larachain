@@ -21,8 +21,8 @@ use Illuminate\Support\Facades\DB;
  * @property string $session_id;
  * @property Collection|Message[] $messages
  * @property mixed $title
- * @property string $embedding_driver
- * @property string $chat_driver
+ * @property DriversEnum $embedding_driver
+ * @property DriversEnum $chat_driver
  * @property Agent $agent
  * @method static whereNull(string $string)
  * @method static find(mixed $chat_id)
@@ -118,12 +118,12 @@ class Chat extends Model implements HasDrivers
         return $this->hasMany(Message::class)->where('is_chat_ignored', false)->oldest();
     }
 
-    function getDriver(): string
+    function getDriver(): DriversEnum
     {
         return $this->chat_driver;
     }
 
-    function getEmbeddingDriver(): string
+    function getEmbeddingDriver(): DriversEnum
     {
         return $this->embedding_driver;
     }

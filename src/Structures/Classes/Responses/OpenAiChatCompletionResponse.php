@@ -10,7 +10,7 @@ use Spatie\LaravelData\Optional;
 class OpenAiChatCompletionResponse extends CompletionResponse
 {
     public function __construct(
-        public Message $assistanceMessage,
+        public Message|null $assistanceMessage,
         #[MapInputName('choices.0.message.content')]
         public mixed $content,
         #[MapInputName('choices.0.finish_reason')]

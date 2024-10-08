@@ -3,8 +3,7 @@
 namespace Garissman\LaraChain\Models;
 
 
-use Garissman\LaraChain\Observers\DocumentObserver;
-use Garissman\LaraChain\Observers\MessageObserver;
+use Garissman\LaraChain\Structures\Enums\DriversEnum;
 use Garissman\LaraChain\Structures\Enums\StatusEnum;
 use Garissman\LaraChain\Structures\Enums\StructuredTypeEnum;
 use Garissman\LaraChain\Structures\Enums\TypesEnum;
@@ -18,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+
 /**
  * Class Document
  *
@@ -28,8 +27,8 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property string|null $original_content
  * @property string|null $file_path
  * @property StructuredTypeEnum $child_type
- * @property string $document_driver
- * @property string $embedding_driver
+ * @property DriversEnum $document_driver
+ * @property DriversEnum $embedding_driver
  * @property string|null $content
  *
  */
@@ -49,11 +48,15 @@ class Document extends Model implements HasDrivers, TaggableContract
         'status' => StatusEnum::class,
         'meta_data' => 'array',
         'summary_status' => StatusEnum::class,
+        'document_driver' => DriversEnum::class,
+        'embedding_driver' => DriversEnum::class,
     ];
+
     public function broadcastOn(string $event): array
     {
         return [$this, "document." . $this->id];
     }
+
     public function filters(): BelongsToMany
     {
         return $this->belongsToMany(Filter::class);
@@ -75,7 +78,7 @@ class Document extends Model implements HasDrivers, TaggableContract
 
     public function getContentAttribute(): string
     {
-        return $this->summary;
+        return $this->summary ?? '';
     }
 
     public function getChatable(): HasDrivers
@@ -98,12 +101,12 @@ class Document extends Model implements HasDrivers, TaggableContract
         return $this->hasMany(Document::class, 'parent_id');
     }
 
-    function getDriver(): string
+    function getDriver(): DriversEnum
     {
         return $this->document_driver;
     }
 
-    function getEmbeddingDriver(): string
+    function getEmbeddingDriver(): DriversEnum
     {
         return $this->embedding_driver;
     }

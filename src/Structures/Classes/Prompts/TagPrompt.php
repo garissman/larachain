@@ -1,6 +1,6 @@
 <?php
 
-namespace Garissman\LaraChain\Structures\Classes;
+namespace Garissman\LaraChain\Structures\Classes\Prompts;
 
 class TagPrompt
 {

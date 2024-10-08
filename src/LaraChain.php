@@ -8,6 +8,7 @@ use Garissman\LaraChain\Engines\OpenAiEngine;
 use Garissman\LaraChain\Jobs\ProcessPendingResponse;
 use Garissman\LaraChain\Models\Chat;
 use Garissman\LaraChain\Structures\Enums\ChatStatuesEnum;
+use Garissman\LaraChain\Structures\Enums\DriversEnum;
 use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Facades\Bus;
@@ -29,10 +30,15 @@ class LaraChain
             ->engine($chat->chat_driver->value)
             ->setChat($chat);
     }
-    public function engine(string $driver): OllamaEngine|NullEngine|OpenAiEngine
+    public function engine(DriversEnum $driver): OllamaEngine|NullEngine|OpenAiEngine
     {
         return (new EngineManager($this->container))
-            ->engine($driver);
+            ->engine($driver->value);
+    }
+
+    function removeAscii($string): string
+    {
+        return str_replace("\u2019", ' ', preg_replace('/[^\x00-\x7F]+/', '', $string));
     }
 
     /**

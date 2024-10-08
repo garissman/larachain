@@ -12,7 +12,7 @@ use Garissman\LaraChain\Structures\Enums\ToolTypes;
 
 abstract class Engine
 {
-    protected BaseClient $client;
+    public BaseClient $client;
     protected string $systemPrompt = '';
     protected ToolTypes $toolType;
     private Chat $chat;
@@ -112,7 +112,7 @@ abstract class Engine
         return $this->client
             ->embedData($prompt);
     }
-    public function completion($prompt): EmbeddingsResponseDto
+    public function completion($prompt): CompletionResponse
     {
         return $this->client
             ->completion($prompt);

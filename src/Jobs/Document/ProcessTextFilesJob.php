@@ -13,8 +13,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ProcessTextFilesJob implements ShouldQueue
@@ -42,7 +40,7 @@ class ProcessTextFilesJob implements ShouldQueue
         $document = $this->document;
         if ($this->document->file_path) {
             $content = Storage::get($this->document->file_path);
-        }else{
+        } else {
             $content = $this->document->content;
         }
         $document->update([

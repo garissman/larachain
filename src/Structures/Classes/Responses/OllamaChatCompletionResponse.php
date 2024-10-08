@@ -14,7 +14,7 @@ use Spatie\LaravelData\Optional;
 class OllamaChatCompletionResponse extends CompletionResponse
 {
     public function __construct(
-        public Message $assistanceMessage,
+        public ?Message $assistanceMessage,
         #[MapInputName('message.content')]
         public mixed $content,
         #[MapInputName('done_reason')]

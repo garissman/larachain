@@ -3,8 +3,10 @@
 namespace Garissman\LaraChain\Structures\Interfaces;
 
 
+use Garissman\LaraChain\Structures\Enums\DriversEnum;
+
 interface HasDrivers
 {
-    function getDriver(): string;
-    function getEmbeddingDriver(): string;
+    function getDriver(): DriversEnum;
+    function getEmbeddingDriver(): DriversEnum;
 }

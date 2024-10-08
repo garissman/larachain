@@ -24,7 +24,7 @@ class OllamaClient extends BaseClient
      * @throws ConnectionException
      * @throws Exception
      */
-    public function chat(array $messages, Message $message): CompletionResponse
+    public function chat(array $messages, ?Message $message=null): CompletionResponse
     {
         $messages = $this->remapMessages($messages);
         $stream = config('larachain.drivers.ollama.stream', false);

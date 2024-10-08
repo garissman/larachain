@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Bus;
+use Garissman\LaraChain\Structures\Enums\DriversEnum;
 
 /**
  * @property mixed|string $body
@@ -118,34 +119,12 @@ class Message extends Model implements HasDrivers
         return $this->belongsTo(Chat::class);
     }
 
-    protected function batchJob(array $jobs, Chat $chat, string $function): void
-    {
-        $driver = $chat->getDriver();
-        Bus::batch($jobs)
-            ->name("Orchestrate Chat - {$chat->id} {$function} {$driver}")
-            ->then(function (Batch $batch) use ($chat) {
-                ChatUiUpdateEvent::dispatch(
-                    $chat->getChatable(),
-                    $chat,
-                    UiStatusEnum::Complete->name
-                );
-            })
-            ->allowFailures()
-            ->dispatch();
-    }
-
-    public function getChatable(): HasDrivers
-    {
-        return $this->chat->getChatable();
-    }
-
-    function getDriver(): string
-    {
-        return $this->chat->chat_driver;
-    }
-
-    function getEmbeddingDriver(): string
+    function getEmbeddingDriver(): DriversEnum
     {
         return $this->chat->embedding_driver;
+    }
+    function getDriver(): DriversEnum
+    {
+        return $this->chat->chat_driver;
     }
 }

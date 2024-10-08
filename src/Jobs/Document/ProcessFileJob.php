@@ -47,7 +47,9 @@ class ProcessFileJob implements ShouldQueue
                 'jobs' => [
                     ProcessTextFilesJob::class,
                 ],
-                'finally' => [],
+                'finally' => [
+                    SummarizeDocumentJob::class,
+                ],
             ],
             // TODO
             TypesEnum::CSV->value => [

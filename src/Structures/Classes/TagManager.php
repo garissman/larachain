@@ -5,6 +5,7 @@ namespace Garissman\LaraChain\Structures\Classes;
 
 use Garissman\LaraChain\Facades\LaraChain;
 use Garissman\LaraChain\Models\Document;
+use Garissman\LaraChain\Structures\Classes\Prompts\TagPrompt;
 use Garissman\LaraChain\Structures\Classes\Responses\CompletionResponse;
 use Illuminate\Support\Collection;
 
@@ -39,7 +40,7 @@ class TagManager
                     ->remove('Here Are The Tags:')
                     ->trim()
                     ->toString();
-                $document->addTag($tag);
+                $document->addTag(trim($tag));
             });
 
     }

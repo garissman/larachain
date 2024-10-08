@@ -13,7 +13,7 @@ use Spatie\LaravelData\Optional;
 class CompletionResponse extends \Spatie\LaravelData\Data
 {
     public function __construct(
-        public Message $assistanceMessage,
+        public Message|null $assistanceMessage,
         public mixed $content,
         public string|Optional $stop_reason,
         public ?string $tool_used = '',

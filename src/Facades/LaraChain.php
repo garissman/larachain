@@ -10,13 +10,15 @@ use Garissman\LaraChain\Engines\NullEngine;
 use Garissman\LaraChain\Engines\OllamaEngine;
 use Garissman\LaraChain\Engines\OpenAiEngine;
 use Garissman\LaraChain\Models\Chat;
+use Garissman\LaraChain\Structures\Enums\DriversEnum;
 use Illuminate\Support\Facades\Facade;
 
 
 /**
  * @method static handle(Chat $chat, string $prompt, string $systemPrompt = '')
  * @method static OllamaEngine|NullEngine|OpenAiEngine invoke(Chat $chat)
- * @method static OllamaEngine|NullEngine|OpenAiEngine engine(string $engine)
+ * @method static OllamaEngine|NullEngine|OpenAiEngine engine(DriversEnum $engine)
+ * @method static string removeAscii(string $content)
  */
 class LaraChain extends Facade
 {

@@ -30,7 +30,7 @@ abstract class BaseClient
 
     protected ?FunctionDto $forceTool = null;
 
-    abstract function chat(array $messages, Message $message): CompletionResponse;
+    abstract function chat(array $messages, ?Message $message=null): CompletionResponse;
 
     abstract public function embedData(string $prompt): EmbeddingsResponseDto;
 

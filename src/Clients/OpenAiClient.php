@@ -23,7 +23,7 @@ class OpenAiClient extends BaseClient
     public function embedData(string $prompt): EmbeddingsResponseDto
     {
         $token = config('larachain.drivers.openai.api_key');
-        $payload=[
+        $payload = [
 
         ];
         $response = Http::withHeaders([
@@ -170,14 +170,6 @@ class OpenAiClient extends BaseClient
             ->withToken($token)
             ->baseUrl($this->baseUrl)
             ->timeout(240)
-            ->retry(3, function (int $attempt, Exception $exception) {
-                Log::info('OpenAi API Error going to retry', [
-                    'attempt' => $attempt,
-                    'error' => $exception->getMessage(),
-                ]);
-
-                return 60000;
-            })
             ->post('/chat/completions', $payload);
 
         if ($response->failed()) {
@@ -188,9 +180,10 @@ class OpenAiClient extends BaseClient
             throw new Exception('OpenAi API Error Chat');
         }
 
-        [$data, $tool_used, $stop_reason] = $this->getContentAndToolTypeFromResults($response);
+        [$data, $tool_used, $tool_calls, $stop_reason] = $this->getContentAndToolTypeFromResults($response->json());
 
         return CompletionResponse::from([
+            'assistanceMessage' => new Message(),
             'content' => $data,
             'tool_used' => $tool_used,
             'stop_reason' => $stop_reason,
@@ -352,7 +345,7 @@ class OpenAiClient extends BaseClient
         })->toArray();
     }
 
-    public function chat(array $messages, Message $message): CompletionResponse
+    public function chat(array $messages, ?Message $message = null): CompletionResponse
     {
         $token = config("larachain.drivers.openai.api_key");
         if (is_null($token)) {
@@ -382,9 +375,12 @@ class OpenAiClient extends BaseClient
             $return = $response->json();
             $return['assistanceMessage'] = $message;
             $return = OpenAiChatCompletionResponse::from($return);
-            $message->body = $return->content == null ? '' : $return->content;
-            $message->is_been_whisper = false;
-            $message->save();
+            if ($message) {
+                $message->body = $return->content == null ? '' : $return->content;
+                $message->is_been_whisper = false;
+                $message->save();
+            }
+
         }
         return $return;
     }
@@ -403,7 +399,7 @@ class OpenAiClient extends BaseClient
         })->toArray();
     }
 
-    public function streamOutput($body, Message $message): array
+    public function streamOutput($body, ?Message $message = null): array
     {
         $return = [];
         $content = '';
@@ -418,8 +414,10 @@ class OpenAiClient extends BaseClient
                 $line = $this->processStreamLine($line);
                 $line = json_decode($line, true);
                 if ($line) {
-                    $message->body = $content;
-                    $message->save();
+                    if ($message) {
+                        $message->body = $content;
+                        $message->save();
+                    }
                     $return = $line;
                     if (isset($line['choices'][0]['delta']['content'])) {
                         $content .= $line['choices'][0]['delta']['content'];
@@ -467,10 +465,14 @@ class OpenAiClient extends BaseClient
         } else {
             $return['choices'][0]['message']['content'] = $content;
             $return['choices'][0]['message']['finish_reason'] = $finish_reason;
-            $message->is_been_whisper = false;
+            if ($message) {
+                $message->is_been_whisper = false;
+            }
         }
-        $message->body = $content;
-        $message->save();
+        if ($message) {
+            $message->body = $content;
+            $message->save();
+        }
         return $return;
     }
 
