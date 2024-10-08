@@ -41,10 +41,10 @@ class VectorlizeDataJob implements ShouldQueue
         //
     }
 
-    public function middleware(): array
-    {
-        return $this->driverMiddleware($this->documentChunk);
-    }
+//    public function middleware(): array
+//    {
+//        return $this->driverMiddleware($this->documentChunk);
+//    }
 
     /**
      * Execute the job.

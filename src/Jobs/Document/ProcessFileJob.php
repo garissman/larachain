@@ -51,6 +51,16 @@ class ProcessFileJob implements ShouldQueue
                     SummarizeDocumentJob::class,
                 ],
             ],
+            TypesEnum::Docx->value => [
+                'jobs' => [
+                    ParseDocxJob::class,
+                ],
+                'finally' => [
+                    SummarizeDocumentJob::class,
+                    TagDocumentJob::class,
+                    DocumentProcessingCompleteJob::class,
+                ],
+            ],
             // TODO
             TypesEnum::CSV->value => [
                 'jobs' => [
@@ -84,16 +94,7 @@ class ProcessFileJob implements ShouldQueue
                     DocumentProcessingCompleteJob::class,
                 ],
             ],
-            TypesEnum::Docx->value => [
-                'jobs' => [
-                    ParseDocxJob::class,
-                ],
-                'finally' => [
-                    SummarizeDocumentJob::class,
-                    TagDocumentJob::class,
-                    DocumentProcessingCompleteJob::class,
-                ],
-            ],
+
 
             TypesEnum::HTML->value => [
                 'jobs' => [
@@ -111,19 +112,21 @@ class ProcessFileJob implements ShouldQueue
 
         $option = $options[$document->type->value];
 
-        Bus::batch(collect($option['jobs'])->map(function ($job) use ($document) {
-            return new $job($document);
-        })->toArray())
-            ->name(sprintf('Process %s Document - %d', $document->type->value, $document->id))
+        Bus::batch(
+            collect($option['jobs'])->map(function ($job) use ($document) {
+                return new $job($document);
+            })->toArray()
+        )
             ->finally(function (Batch $batch) use ($document, $option) {
-                Bus::batch(collect($option['finally'])->map(function ($job) use ($document) {
-                    return new $job($document);
-                })->toArray())
+                Bus::batch(
+                    collect($option['finally'])->map(function ($job) use ($document) {
+                        return new $job($document);
+                    })->toArray()
+                )
                     ->name(sprintf('Part 2 of Process for %s Document - %d', $document->type->value, $document->id))
-                    ->allowFailures()
                     ->dispatch();
             })
-            ->allowFailures()
+            ->name(sprintf('Process %s Document - %d', $document->type->value, $document->id))
             ->dispatch();
 
     }

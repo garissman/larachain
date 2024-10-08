@@ -2,8 +2,8 @@
 
 namespace Garissman\LaraChain\Jobs\Document;
 
-use App\Models\Document;
-use Facades\App\Domains\Documents\Transformers\DocXTransformer;
+use Garissman\LaraChain\Models\Document;
+use Garissman\LaraChain\Structures\Classes\Transformers\DocXTransformer;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

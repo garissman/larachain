@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Document $document
  * @property StructuredTypeEnum $type
  * @property string $content
+ * @method static updateOrCreate(array $array, array $array1)
  */
 class DocumentChunk extends Model implements HasDrivers, TaggableContract
 {
