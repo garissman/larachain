@@ -25,7 +25,7 @@ trait JobMiddlewareTrait
         }
 
         return [
-            (new WithoutOverlapping($hasDrivers->getDriver()))
+            (new WithoutOverlapping($hasDrivers->getDriver()->value))
                 ->releaseAfter(30)
                 ->expireAfter(600),
         ];
