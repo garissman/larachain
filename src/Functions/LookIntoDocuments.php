@@ -6,6 +6,7 @@ namespace Garissman\LaraChain\Functions;
 use Garissman\LaraChain\Facades\LaraChain;
 use Garissman\LaraChain\Models\DocumentChunk;
 use Garissman\LaraChain\Models\Message;
+use Garissman\LaraChain\Models\Tag;
 use Garissman\LaraChain\Structures\Classes\DistanceQuery\DistanceQueryFacade;
 use Garissman\LaraChain\Structures\Classes\FunctionContract;
 use Garissman\LaraChain\Structures\Classes\Prompts\SummarizePrompt;
@@ -28,7 +29,13 @@ class LookIntoDocuments extends FunctionContract
         ToolTypes::Source,
         ToolTypes::Output,
     ];
-    protected string $description = 'Trigger this intent if user has problems with connections or need some guidance.';
+    protected string $description = 'Trigger this intent if user has problems with connections or need guidance on next subjects: ';
+
+    public function getDescription(): string
+    {
+        $tags = Tag::whereHas('documents')->select('name')->get()->pluck('name')->toArray();
+        return $this->description . ' ' . implode(', ', $tags);
+    }
 
     public function handle(
         Message $toolMessage,

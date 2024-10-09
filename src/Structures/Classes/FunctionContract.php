@@ -33,6 +33,10 @@ abstract class FunctionContract
 
         return $this;
     }
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
 
     abstract public function handle(
         Message $toolMessage,
@@ -62,11 +66,6 @@ abstract class FunctionContract
     public function getKey(): string
     {
         return $this->name;
-    }
-
-    public function getDescription(): string
-    {
-        return $this->description;
     }
 
     public function runAsBatch(): bool

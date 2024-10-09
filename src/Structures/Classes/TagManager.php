@@ -15,10 +15,10 @@ class TagManager
 
     protected string $tagsAsString = '';
 
-    public function handle(Document $document): void
+    public function handle(Document $document): ?Document
     {
         if (!$document->summary) {
-            return;
+            return $document;
         }
         $summary = $document->summary;
         $prompt = TagPrompt::prompt($summary);
@@ -32,16 +32,14 @@ class TagManager
         $this->tagsAsString = $response->content;
 
         $this->tags = collect(explode(',', $this->tagsAsString));
-
         $this->tags
             ->map(function ($tag) use ($document) {
                 $tag = str($tag)
-                    ->remove('Here Are 3 Tags:')
-                    ->remove('Here Are The Tags:')
                     ->trim()
                     ->toString();
                 $document->addTag(trim($tag));
             });
+        return $document->load(['tags']);
 
     }
 }

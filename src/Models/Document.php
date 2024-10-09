@@ -56,6 +56,18 @@ class Document extends Model implements HasDrivers, TaggableContract
     {
         return [$this, "document." . $this->id];
     }
+    public function broadcastWith(string $event): array
+    {
+        return match ($event) {
+            'created' => ['title' => $this->title],
+            default => ['model' => [
+                'id'=>$this->id,
+                'status'=>$this->status,
+                'file_path'=>$this->file_path,
+                'summary'=>$this->summary,
+            ]],
+        };
+    }
 
     public function filters(): BelongsToMany
     {

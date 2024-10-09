@@ -42,9 +42,11 @@ class OllamaClient extends BaseClient
             $return = $this->streamOutput($response->getBody(), $message);
         } else {
             $return = $response->json();
-            $message->body = $return->content;
-            $message->is_been_whisper = false;
-            $message->save();
+            if ($message) {
+                $message->body = $return['message']['content'];
+                $message->is_been_whisper = false;
+                $message->save();
+            }
         }
         $return['assistanceMessage'] = $message;
         $return = OllamaChatCompletionResponse::from($return);
