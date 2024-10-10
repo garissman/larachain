@@ -12,6 +12,7 @@ use Garissman\LaraChain\Structures\Classes\FunctionContract;
 use Garissman\LaraChain\Structures\Classes\Prompts\SummarizePrompt;
 use Garissman\LaraChain\Structures\Classes\PropertyDto;
 use Garissman\LaraChain\Structures\Classes\Responses\FunctionResponse;
+use Garissman\LaraChain\Structures\Enums\RoleEnum;
 use Garissman\LaraChain\Structures\Enums\ToolTypes;
 use Garissman\LaraChain\Structures\Traits\ChatHelperTrait;
 use Garissman\LaraChain\Structures\Traits\ToolsHelper;
@@ -43,6 +44,10 @@ class LookIntoDocuments extends FunctionContract
                 $arguments = []
     ): FunctionResponse
     {
+        $assistanceMessage->role=RoleEnum::Tool;
+        $assistanceMessage->is_been_whisper = false;
+//        $assistanceMessage->is_chat_ignored=true;
+
         $args = $toolMessage->args;
         $embedding = LaraChain::engine($toolMessage->getEmbeddingDriver())->embedData($args['context']);
         $embeddingSize = LaraChain::engine($toolMessage->getEmbeddingDriver())->getEmbeddingSize();
@@ -65,9 +70,10 @@ class LookIntoDocuments extends FunctionContract
         );
         $response = LaraChain::engine($toolMessage->getDriver())
             ->completion($contentFlattened);
+        $assistanceMessage->body = $response->content;
         $toolMessage->body = $response->content;
         $toolMessage->save();
-
+        $assistanceMessage->save();
         return FunctionResponse::from([
             'content' => $toolMessage->body,
             'prompt' => $toolMessage->body,

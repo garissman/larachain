@@ -30,11 +30,11 @@ abstract class BaseClient
 
     protected ?FunctionDto $forceTool = null;
 
-    abstract function chat(array $messages, ?Message $message=null): CompletionResponse;
+    abstract function chat(array $messages, ?Message $message = null): CompletionResponse;
 
     abstract public function embedData(string $prompt): EmbeddingsResponseDto;
 
-    public function streamOutput($body, Message $message): array
+    public function streamOutput($body, ?Message $message = null): array
     {
         $return = [];
         $content = '';
@@ -47,12 +47,28 @@ abstract class BaseClient
                 $line = $this->processStreamLine($line);
                 $line = json_decode($line, true);
                 if ($line) {
-                    $message->body = $content;
-                    $message->save();
+
                     $return = $line;
                     $content .= $line['message']['content'];
-                    if ($line['message']['content'] == '[TOOL_CALLS]') {
+                    if (
+                        $line['message']['content'] == '[TOOL_CALLS]'
+                        || str_contains($content, '{"name":')
+                    ) {
                         $tool_call = true;
+                    }
+
+                    if (!$tool_call) {
+                        if ($message) {
+                            $message->body = $content;
+                        }
+                    } else {
+                        if ($message) {
+                            $message->body = '';
+                        }
+
+                    }
+                    if ($message) {
+                        $message->save();
                     }
                     $response = '';
                 }
@@ -61,15 +77,48 @@ abstract class BaseClient
         if ($tool_call) {
             $return['message']['content'] = '';
             $tool = json_decode(trim(str_replace('[TOOL_CALLS]', '', $content)), true);
+            if (str_contains(config('larachain.drivers.ollama.models.chat_model'), 'llama')) {
+                $tool['arguments'] = $tool['parameters'];
+                $tool = [$tool];
+            }
             $return['message']['tool_calls'] = $tool;
+            if ($message) {
+                $message->body = '';
+            }
 //            $message->role =  RoleEnum::Tool;
         } else {
             $return['message']['content'] = $content;
-            $message->is_been_whisper = false;
+            if ($message) {
+                $message->is_been_whisper = false;
+                $message->body = $content;
+            }
+
         }
-        $message->body = $content;
-        $message->save();
+        if ($message) {
+            $message->save();
+        }
         return $return;
+    }
+    public function streamOutputCompletion($body): array
+    {
+        $return = [];
+        $content = '';
+        $response = '';
+        $tool_call = false;
+        while (!$body->eof()) {
+            $response .= $body->getContents();
+            $lines = explode("\n", $response);
+            foreach ($lines as $line) {
+                $line = $this->processStreamLine($line);
+                $line = json_decode($line, true);
+                if ($line) {
+                    $return = $line;
+                    $content .= $line['response'];
+                    $response = '';
+                }
+            }
+        }
+        return ['response'=>$content];
     }
 
     abstract function processStreamLine(string $line): string;
@@ -170,6 +219,17 @@ abstract class BaseClient
         return $this;
     }
 
+    public function isAsync(): bool
+    {
+        return config('larachain.drivers.' . $this->driver . '.async', false);
+    }
+
+    public function getEmbeddingSize(): int
+    {
+        $embedding_model = config('larachain.drivers.' . $this->driver . '.models.embedding_model', 3072);
+        return config('larachain.embedding_sizes.' . $embedding_model, 3072);
+    }
+
     protected function messagesToArray(array $messages): array
     {
         return collect($messages)->map(function ($message) {
@@ -179,17 +239,6 @@ abstract class BaseClient
 
             return $message;
         })->toArray();
-    }
-
-    public function isAsync(): bool
-    {
-        return config('larachain.drivers.'.$this->driver.'.async', false);
-    }
-
-    public function getEmbeddingSize(): int
-    {
-        $embedding_model=config('larachain.drivers.'.$this->driver.'.models.embedding_model', 3072);
-        return config('larachain.embedding_sizes.'.$embedding_model, 3072);
     }
 
 }

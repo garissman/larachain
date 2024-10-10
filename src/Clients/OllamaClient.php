@@ -173,18 +173,21 @@ class OllamaClient extends BaseClient
      */
     public function completion(string $prompt): CompletionResponse
     {
-        Log::info('LlmDriver::Ollama::completion');
-
+        $stream = config('larachain.drivers.ollama.stream', false);
         $response = $this->getClient()->post('/generate', [
             'model' => config('larachain.drivers.ollama.models.completion_model'),
             'prompt' => $prompt,
-            'stream' => false,
+            'stream' => $stream,
         ]);
-
+        if ($stream) {
+            $return = $this->streamOutputCompletion($response->getBody());
+        } else {
+            $return = $response->json();
+        }
         /**
          * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion
          */
-        $results = $response->json()['response'];
+        $results = $return['response'];
 
         return CompletionResponse::from([
             'content' => $results,
