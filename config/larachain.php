@@ -4,8 +4,8 @@
 use Garissman\LaraChain\Functions\ExampleTool;
 
 return [
-    'driver' => 'openai',
-    'embedding_driver' => 'openai',
+    'driver' => env('LARACHAIN_DRIVER', 'openai'),
+    'embedding_driver' => env('LARACHAIN_EMBEDDING_DRIVER', 'openai'),
     'distance_driver' => env('LARACHAIN_DISTANCE_DRIVER', 'pgsql'),
     'drivers' => [
         'openai' => [
@@ -33,6 +33,19 @@ return [
                 'chat_model' => env('OLLAMA_CHAT_MODEL', 'mistral-nemo'),
             ],
             'async' => env('OLLAMA_ASYNC', false),
+        ],
+        'anything_llm' => [
+            'workspace' => env('ANYTHING_LLM_WORKSPACE', 'default'),
+            'mode' => env('ANYTHING_LLM_MODE', 'chat'),
+            'api_key' => env('ANYTHING_LLM_API_KEY'),
+            'api_url' => env('ANYTHING_LLM_API_URL', 'http://localhost:3001'),
+            'stream' => env('ANYTHING_LLM_STREAM', false),
+            'models' => [
+                'completion_model' => env('ANYTHING_LLM_COMPLETION_MODEL', 'mistral-nemo'),
+                'embedding_model' => env('ANYTHING_LLM_EMBEDDING_MODEL', 'mxbai-embed-large'),
+                'chat_model' => env('ANYTHING_LLM_CHAT_MODEL', 'mistral-nemo'),
+            ],
+            'async' => env('ANYTHING_LLM_ASYNC', false),
         ],
     ],
     'embedding_sizes' => [

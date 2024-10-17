@@ -14,6 +14,7 @@ use Garissman\LaraChain\Structures\Enums\DriversEnum;
 use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Facades\Bus;
+use Throwable;
 
 
 class LaraChain
@@ -23,7 +24,6 @@ class LaraChain
 
     public function __construct(private readonly Container $container)
     {
-//        $this->engine = (new EngineManager($this->container))->engine();
     }
 
     public function invoke(Chat $chat): OllamaEngine|NullEngine|OpenAiEngine|AnythingLlmEngine
@@ -45,7 +45,7 @@ class LaraChain
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function handle(Chat $chat, string $prompt, string $systemPrompt = '', ?MetaDataDto $meta_data = null): Batch
     {

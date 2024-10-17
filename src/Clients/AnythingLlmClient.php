@@ -5,9 +5,9 @@ namespace Garissman\LaraChain\Clients;
 use Exception;
 use Garissman\LaraChain\Models\Message;
 use Garissman\LaraChain\Structures\Classes\MessageInDto;
+use Garissman\LaraChain\Structures\Classes\Responses\AnythingChatCompletionResponse;
 use Garissman\LaraChain\Structures\Classes\Responses\CompletionResponse;
 use Garissman\LaraChain\Structures\Classes\Responses\EmbeddingsResponseDto;
-use Garissman\LaraChain\Structures\Classes\Responses\OllamaChatCompletionResponse;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
@@ -24,31 +24,103 @@ class AnythingLlmClient extends BaseClient
      * @throws ConnectionException
      * @throws Exception
      */
-    public function chat(array $messages, ?Message $message=null): CompletionResponse
+    public function chat(array $messages, ?Message $message = null): CompletionResponse
     {
         $messages = $this->remapMessages($messages);
         $stream = config('larachain.drivers.anything_llm.stream', false);
-        $workspace = config('larachain.drivers.anything_llm.workspace', false);
+        $workspace = config('larachain.drivers.anything_llm.workspace', 'default');
+        $mode = config('larachain.drivers.anything_llm.mode', 'chat');
+        $thread = $message->chat->metadata['anything_llm']['thread']['slug'];
         $payload = [
-            'messages' => $messages,
-            'stream' => $stream,
+            'message' => $messages[count($messages) - 1]['content'],
+            'mode' => $mode
         ];
+        $url = "api/v1/workspace/" . $workspace . "/thread/" . $thread . "/";
+        if ($stream) {
+            $url.="stream-chat";
+        }else{
+            $url.="chat";
+        }
         $payload = $this->modifyPayload($payload);
-        $response = $this->getClient()->post("api/v1/workspace/tw/thread/729baf97-011d-432d-95ec-535946a2b461/chats", $payload);
+
+        $response = $this->getClient()->post($url, $payload);
         if ($stream) {
             $return = $this->streamOutput($response->getBody(), $message);
         } else {
             $return = $response->json();
             if ($message) {
-                $message->body = $return['message']['content'];
+                $message->body = $return['textResponse'];
                 $message->is_been_whisper = false;
                 $message->save();
             }
         }
         $return['assistanceMessage'] = $message;
-        $return = OllamaChatCompletionResponse::from($return);
-        return $return;
+        return AnythingChatCompletionResponse::from($return);
 
+    }
+    public function streamOutput($body, ?Message $message = null): array
+    {
+        $return = [];
+        $content = '';
+        $response = '';
+        $tool_call = false;
+        while (!$body->eof()) {
+            $response .= $body->getContents();
+            $lines = explode("\n", $response);
+            foreach ($lines as $line) {
+                $line = $this->processStreamLine($line);
+                $line = json_decode($line, true);
+                if ($line) {
+
+                    $return = $line;
+                    if (isset($line['textResponse'])) {
+                        $content .= $line['textResponse'];
+                        if (
+                            $line['textResponse'] == '[TOOL_CALLS]'
+                            || str_contains($content, '{"name":')
+                        ) {
+                            $tool_call = true;
+                        }
+                    }
+                    if (!$tool_call) {
+                        if ($message) {
+                            $message->body = $content;
+                        }
+                    } else {
+                        if ($message) {
+                            $message->body = '';
+                        }
+                    }
+                    if ($message) {
+                        $message->save();
+                    }
+                    $response = '';
+                }
+            }
+        }
+        if ($tool_call) {
+            $return['textResponse'] = '';
+            $tool = json_decode(trim(str_replace('[TOOL_CALLS]', '', $content)), true);
+            if (str_contains(config('larachain.drivers.ollama.models.chat_model'), 'llama')) {
+                $tool['arguments'] = $tool['parameters'];
+                $tool = [$tool];
+            }
+            $return['tool_calls'] = $tool;
+            if ($message) {
+                $message->body = '';
+            }
+//            $message->role =  RoleEnum::Tool;
+        } else {
+            $return['textResponse'] = $content;
+            if ($message) {
+                $message->is_been_whisper = false;
+                $message->body = $content;
+            }
+        }
+        if ($message) {
+            $message->save();
+        }
+        return $return;
     }
 
     /**
@@ -75,14 +147,40 @@ class AnythingLlmClient extends BaseClient
         return Http::withHeaders([
             'content-type' => 'application/json',
         ])
-            ->retry(3, 6000)
-            ->timeout(120)
+            ->withToken($api_token)
             ->baseUrl($baseUrl);
+    }
+
+    /**
+     * @return array|mixed
+     * @throws ConnectionException
+     * @throws Exception
+     */
+    public function createChat(): mixed
+    {
+        $workspace = config('larachain.drivers.anything_llm.workspace', false);
+        $response = $this->getClient()
+            ->post("api/v1/workspace/" . $workspace . "/thread/new");
+        return $response->json();
+    }
+
+    /**
+     * @param string $thread
+     * @return array|mixed
+     * @throws ConnectionException
+     * @throws Exception
+     */
+    public function deleteChat(string $thread): mixed
+    {
+        $workspace = config('larachain.drivers.anything_llm.workspace', false);
+        $response = $this->getClient()
+            ->delete("api/v1/workspace/" . $workspace . "/thread/" . $thread);
+        return $response->json();
     }
 
     public function processStreamLine(string $line): string
     {
-        return $line;
+        return trim(str_replace("data:","",$line));
     }
 
     /**

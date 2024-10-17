@@ -3,6 +3,7 @@
 namespace Garissman\LaraChain\Models;
 
 use App\Models\User;
+use Garissman\LaraChain\Observers\ChatObserver;
 use Garissman\LaraChain\Structures\Classes\MetaDataDto;
 use Garissman\LaraChain\Structures\Classes\ToolsDto;
 use Garissman\LaraChain\Structures\Enums\ChatStatuesEnum;
@@ -10,6 +11,7 @@ use Garissman\LaraChain\Structures\Enums\DriversEnum;
 use Garissman\LaraChain\Structures\Enums\RoleEnum;
 use Garissman\LaraChain\Structures\Interfaces\HasDrivers;
 use Garissman\LaraChain\Structures\Traits\HasDriversTrait;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,11 +26,13 @@ use Illuminate\Support\Facades\DB;
  * @property DriversEnum $embedding_driver
  * @property DriversEnum $chat_driver
  * @property Agent $agent
+ * @property mixed $metadata
  * @method static whereNull(string $string)
  * @method static find(mixed $chat_id)
  * @method addInputWithTools(string $sprintf, $param, $param1, $id, $param2, $param3, $name, $param4, $param5, $arguments)
  * @method static create(array $array)
  */
+#[ObservedBy([ChatObserver::class])]
 class Chat extends Model implements HasDrivers
 {
     use HasDriversTrait;
@@ -40,6 +44,7 @@ class Chat extends Model implements HasDrivers
         'chat_status' => ChatStatuesEnum::class,
         'chat_driver' => DriversEnum::class,
         'embedding_driver' => DriversEnum::class,
+        'metadata' => 'json'
     ];
 
     public function addInput(

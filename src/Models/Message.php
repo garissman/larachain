@@ -7,18 +7,16 @@ use App\Models\User;
 use Garissman\LaraChain\Observers\MessageObserver;
 use Garissman\LaraChain\Structures\Classes\MetaDataDto;
 use Garissman\LaraChain\Structures\Classes\ToolsDto;
+use Garissman\LaraChain\Structures\Enums\DriversEnum;
 use Garissman\LaraChain\Structures\Enums\RoleEnum;
 use Garissman\LaraChain\Structures\Interfaces\HasDrivers;
 use Garissman\LaraChain\Structures\Traits\HasDriversTrait;
-use Illuminate\Bus\Batch;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Bus;
-use Garissman\LaraChain\Structures\Enums\DriversEnum;
 
 /**
  * @property mixed|string $body
@@ -123,6 +121,7 @@ class Message extends Model implements HasDrivers
     {
         return $this->chat->embedding_driver;
     }
+
     function getDriver(): DriversEnum
     {
         return $this->chat->chat_driver;

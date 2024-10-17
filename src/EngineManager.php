@@ -36,6 +36,10 @@ class EngineManager extends Manager
         return new OllamaEngine();
     }
 
+    /**
+     * @return AnythingLlmEngine
+     */
+
     public function createAnythingLlmDriver(): AnythingLlmEngine
     {
         return new AnythingLlmEngine();
@@ -56,15 +60,6 @@ class EngineManager extends Manager
 //        $this->ensureOpenAiClientIsInstalled();
 
         return new OpenAiEngine();
-    }
-
-    protected function ensureOpenAiClientIsInstalled(): void
-    {
-        if (class_exists(OpenAi::class)) {
-            return;
-        }
-
-        throw new Exception('Please install the suggested OpenAI client: openai-php/laravel.');
     }
 
     /**
@@ -101,5 +96,14 @@ class EngineManager extends Manager
         }
 
         return $driver;
+    }
+
+    protected function ensureOpenAiClientIsInstalled(): void
+    {
+        if (class_exists(OpenAi::class)) {
+            return;
+        }
+
+        throw new Exception('Please install the suggested OpenAI client: openai-php/laravel.');
     }
 }
