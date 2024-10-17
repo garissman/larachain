@@ -28,7 +28,7 @@ class PostGres extends Base
 
         $results = collect($neighborsCosine)
             ->unique('id')
-            ->take(8);
+            ->take(4);
 
         $siblingsIncluded = $this->getSiblings($results);
 

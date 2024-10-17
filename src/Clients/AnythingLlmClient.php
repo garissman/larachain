@@ -14,7 +14,7 @@ use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class OllamaClient extends BaseClient
+class AnythingLlmClient extends BaseClient
 {
     protected string $driver = 'ollama';
 
@@ -27,17 +27,14 @@ class OllamaClient extends BaseClient
     public function chat(array $messages, ?Message $message=null): CompletionResponse
     {
         $messages = $this->remapMessages($messages);
-        $stream = config('larachain.drivers.ollama.stream', false);
+        $stream = config('larachain.drivers.anything_llm.stream', false);
+        $workspace = config('larachain.drivers.anything_llm.workspace', false);
         $payload = [
-            'model' => config('larachain.drivers.ollama.models.chat_model'),
             'messages' => $messages,
             'stream' => $stream,
-            'options' => [
-                'temperature' => config('larachain.temperature',0),
-            ],
         ];
         $payload = $this->modifyPayload($payload);
-        $response = $this->getClient()->post('/chat', $payload);
+        $response = $this->getClient()->post("api/v1/workspace/tw/thread/729baf97-011d-432d-95ec-535946a2b461/chats", $payload);
         if ($stream) {
             $return = $this->streamOutput($response->getBody(), $message);
         } else {
@@ -68,11 +65,11 @@ class OllamaClient extends BaseClient
 
     protected function getClient(): PendingRequest
     {
-        $api_token = config('larachain.drivers.ollama.api_key');
-        $baseUrl = config('larachain.drivers.ollama.api_url');
+        $api_token = config('larachain.drivers.anything_llm.api_key');
+        $baseUrl = config('larachain.drivers.anything_llm.api_url');
 
         if (!$api_token || !$baseUrl) {
-            throw new Exception('Ollama API Base URL or Token not found');
+            throw new Exception('Anything LLM API Base URL or Token not found');
         }
 
         return Http::withHeaders([

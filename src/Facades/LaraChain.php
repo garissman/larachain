@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Facade;
 
 
 /**
- * @method static handle(Chat $chat, string $prompt, string $systemPrompt = '')
+ * @method static handle(Chat $chat, string $prompt, string $systemPrompt = '',$meta_data=[])
  * @method static OllamaEngine|NullEngine|OpenAiEngine invoke(Chat $chat)
  * @method static OllamaEngine|NullEngine|OpenAiEngine engine(DriversEnum $engine)
  * @method static string removeAscii(string $content)

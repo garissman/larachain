@@ -20,7 +20,8 @@ class MetaDataDto extends Data
         public mixed $driver = '',
         public mixed $source = '',
         public mixed $reference_collection_id = '',
-        public array $args = []
+        public array $args = [],
+        public array $whatsapp_message = [],
     ) {
 
     }

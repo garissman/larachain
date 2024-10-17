@@ -30,12 +30,12 @@ class LookIntoDocuments extends FunctionContract
         ToolTypes::Source,
         ToolTypes::Output,
     ];
-    protected string $description = 'Trigger this intent if user has problems with connections or need guidance on next subjects: ';
+    protected string $description = 'Trigger this function if user need to know more about  ';
 
     public function getDescription(): string
     {
         $tags = Tag::whereHas('documents')->select('name')->get()->pluck('name')->toArray();
-        return $this->description . ' ' . implode(', ', $tags);
+        return $this->description . ' ' . implode(', ', $tags).' and travelwifi';
     }
 
     public function handle(

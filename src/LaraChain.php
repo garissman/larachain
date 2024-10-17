@@ -2,11 +2,13 @@
 
 namespace Garissman\LaraChain;
 
+use Garissman\LaraChain\Engines\AnythingLlmEngine;
 use Garissman\LaraChain\Engines\NullEngine;
 use Garissman\LaraChain\Engines\OllamaEngine;
 use Garissman\LaraChain\Engines\OpenAiEngine;
 use Garissman\LaraChain\Jobs\ProcessPendingResponse;
 use Garissman\LaraChain\Models\Chat;
+use Garissman\LaraChain\Structures\Classes\MetaDataDto;
 use Garissman\LaraChain\Structures\Enums\ChatStatuesEnum;
 use Garissman\LaraChain\Structures\Enums\DriversEnum;
 use Illuminate\Bus\Batch;
@@ -24,12 +26,13 @@ class LaraChain
 //        $this->engine = (new EngineManager($this->container))->engine();
     }
 
-    public function invoke(Chat $chat): OllamaEngine|NullEngine|OpenAiEngine
+    public function invoke(Chat $chat): OllamaEngine|NullEngine|OpenAiEngine|AnythingLlmEngine
     {
         return (new EngineManager($this->container))
             ->engine($chat->chat_driver->value)
             ->setChat($chat);
     }
+
     public function engine(DriversEnum $driver): OllamaEngine|NullEngine|OpenAiEngine
     {
         return (new EngineManager($this->container))
@@ -44,12 +47,13 @@ class LaraChain
     /**
      * @throws \Throwable
      */
-    public function handle(Chat $chat, string $prompt, string $systemPrompt = ''): Batch
+    public function handle(Chat $chat, string $prompt, string $systemPrompt = '', ?MetaDataDto $meta_data = null): Batch
     {
 
         $chat->addInput(
             message: $prompt,
             systemPrompt: $systemPrompt,
+            meta_data: $meta_data
         );
         $chat->update([
             'chat_status' => ChatStatuesEnum::InProgress->value,

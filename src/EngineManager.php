@@ -4,6 +4,7 @@ namespace Garissman\LaraChain;
 
 
 use Exception;
+use Garissman\LaraChain\Engines\AnythingLlmEngine;
 use Garissman\LaraChain\Engines\NullEngine;
 use Garissman\LaraChain\Engines\OllamaEngine;
 use Garissman\LaraChain\Engines\OpenAiEngine;
@@ -16,9 +17,9 @@ class EngineManager extends Manager
      * Get a driver instance.
      *
      * @param string|null $name
-     * @return NullEngine|OllamaEngine|OpenAiEngine
+     * @return NullEngine|OllamaEngine|OpenAiEngine|AnythingLlmEngine
      */
-    public function engine(string $name = null): NullEngine|OllamaEngine|OpenAiEngine
+    public function engine(string $name = null): NullEngine|OllamaEngine|OpenAiEngine|AnythingLlmEngine
     {
         return $this->driver($name);
     }
@@ -33,6 +34,11 @@ class EngineManager extends Manager
     public function createOllamaDriver(): OllamaEngine
     {
         return new OllamaEngine();
+    }
+
+    public function createAnythingLlmDriver(): AnythingLlmEngine
+    {
+        return new AnythingLlmEngine();
     }
 
     /**

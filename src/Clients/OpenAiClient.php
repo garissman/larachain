@@ -23,9 +23,8 @@ class OpenAiClient extends BaseClient
     public function embedData(string $prompt): EmbeddingsResponseDto
     {
         $token = config('larachain.drivers.openai.api_key');
-        $payload = [
-
-        ];
+        $payload = [];
+        $this->baseUrl=config('larachain.drivers.openai.api_url');
         $response = Http::withHeaders([
             'Content-type' => 'application/json',
         ])
@@ -163,7 +162,7 @@ class OpenAiClient extends BaseClient
         ];
 
         $payload = $this->modifyPayload($payload);
-
+        $this->baseUrl=config('larachain.drivers.openai.api_url');
         $response = Http::withHeaders([
             'Content-type' => 'application/json',
         ])
@@ -360,6 +359,7 @@ class OpenAiClient extends BaseClient
 
         $payload = $this->modifyPayload($payload);
         unset($payload['system']);
+        $this->baseUrl=config('larachain.drivers.openai.api_url');
         $response = Http::withHeaders([
             'Content-type' => 'application/json',
         ])
