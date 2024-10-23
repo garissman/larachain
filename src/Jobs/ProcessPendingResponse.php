@@ -10,7 +10,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
 
@@ -33,27 +32,32 @@ class ProcessPendingResponse implements ShouldQueue
         $response = LaraChain::invoke($this->chat)
             ->chat();
         if (!empty($response->tool_calls)) {
-            foreach ($response->tool_calls as $tool_call) {
-                $tool = $this->getTool($tool_call->name);
-                $toolMessage = $this
-                    ->chat
-                    ->messages()
-                    ->create(
-                        [
-                            'body' => sprintf('Tool %s', $tool_call->name),
-                            'role' => RoleEnum::Tool,
-                            'in_out' => false,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                            'is_chat_ignored' => true,
-                            'tool_name' => $tool_call->name,
-                            'tool_id' => $tool_call->id,
-                            'args' => $tool_call->arguments,
+            if ($this->chat->messages()->count() > 3) {
+                foreach ($response->tool_calls as $tool_call) {
+                    $tool = $this->getTool($tool_call->name);
+                    $response->assistanceMessage->update([
+                        'tool_name' => $tool_call->name,
+                        'tool_id' => $tool_call->id,
+                        'args' => $tool_call->arguments,
+                    ]);
+                    $toolMessage = $response->assistanceMessage;
+                    $tool->handle($toolMessage, $response->assistanceMessage, $tool_call->arguments);
+                    if (!$this->batch()->cancelled()) {
+                        $this->batch()->add([
+                            new ProcessPendingTool($tool, $response->assistanceMessage, $toolMessage, $tool_call->arguments),
                         ]);
-                $tool->handle($toolMessage, $response->assistanceMessage, $tool_call->arguments);
+                    }
+                }
+            } else {
+                $this->chat
+                    ->messages()
+                    ->where('role', RoleEnum::Assistant)
+                    ->latest()
+                    ->first()
+                    ->update(['role' => RoleEnum::Tool]);
                 if (!$this->batch()->cancelled()) {
                     $this->batch()->add([
-                        new ProcessPendingTool($tool, $response->assistanceMessage, $toolMessage, $tool_call->arguments),
+                        new ProcessPendingResponse($this->chat)
                     ]);
                 }
             }
