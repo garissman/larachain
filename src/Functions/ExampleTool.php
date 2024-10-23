@@ -28,33 +28,27 @@ class ExampleTool extends FunctionContract
     protected string $description = 'Trigger this intent if user ask to user the example tool.';
 
     public function handle(
-        Message $toolMessage,
-        Message $assistanceMessage,
-                $arguments = []
+        Message $message
     ): FunctionResponse
     {
-        $args = $toolMessage->args;
-
-        $name = data_get($args, 'name', '');
-
-        // Do SomeThing
-        $assistanceMessage->role=RoleEnum::Tool;
-        // Do some RAG with this message
-        $assistanceMessage->body = 'Let me take a look';
-        $assistanceMessage->is_been_whisper = false;
-        $assistanceMessage->is_chat_ignored=true;
-        $assistanceMessage->tool_name = $toolMessage->tool_name;
-        $assistanceMessage->tool_id= $toolMessage->tool_id;
-        $assistanceMessage->args= $toolMessage->args;
-        $assistanceMessage->save();
-
-        $toolMessage->body = 'Here is your Email ' . $name;
-        $toolMessage->save();
-        $assistanceMessage->save();
+        $args = $message->args;
+        $name = data_get($args, 'name', null);
+        if (!$name) {
+            $message->body="Ask for name";
+            $message->save();
+            return FunctionResponse::from([
+                'content' => $message->body,
+                'prompt' => $message->body,
+                'requires_followup' => false,
+                'documentChunks' => collect([]),
+                'save_to_message' => false,
+            ]);
+        }
+       // Do your magic
 
         return FunctionResponse::from([
-            'content' => $toolMessage->body,
-            'prompt' => $toolMessage->body,
+            'content' => $message->body,
+            'prompt' => $message->body,
             'requires_followup' => false,
             'documentChunks' => collect([]),
             'save_to_message' => false,

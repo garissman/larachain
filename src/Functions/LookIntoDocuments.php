@@ -39,18 +39,16 @@ class LookIntoDocuments extends FunctionContract
     }
 
     public function handle(
-        Message $toolMessage,
-        Message $assistanceMessage,
-                $arguments = []
+        Message $message,
     ): FunctionResponse
     {
-        $assistanceMessage->role=RoleEnum::Tool;
-        $assistanceMessage->is_been_whisper = false;
+        $message->role=RoleEnum::Tool;
+        $message->is_been_whisper = false;
 //        $assistanceMessage->is_chat_ignored=true;
 
-        $args = $toolMessage->args;
-        $embedding = LaraChain::engine($toolMessage->getEmbeddingDriver())->embedData($args['context']);
-        $embeddingSize = LaraChain::engine($toolMessage->getEmbeddingDriver())->getEmbeddingSize();
+        $args = $message->args;
+        $embedding = LaraChain::engine($message->getEmbeddingDriver())->embedData($args['context']);
+        $embeddingSize = LaraChain::engine($message->getEmbeddingDriver())->getEmbeddingSize();
 
         $documentChunkResults = DistanceQueryFacade::cosineDistance(
             $embedding->embedding,
@@ -68,15 +66,13 @@ class LookIntoDocuments extends FunctionContract
             originalPrompt: $args['context'],
             context: $context
         );
-        $response = LaraChain::engine($toolMessage->getDriver())
+        $response = LaraChain::engine($message->getDriver())
             ->completion($contentFlattened);
-        $assistanceMessage->body = $response->content;
-        $toolMessage->body = $response->content;
-        $toolMessage->save();
-        $assistanceMessage->save();
+        $message->body = $response->content;
+        $message->save();
         return FunctionResponse::from([
-            'content' => $toolMessage->body,
-            'prompt' => $toolMessage->body,
+            'content' => $message->body,
+            'prompt' => $message->body,
             'requires_followup' => false,
             'documentChunks' => collect([]),
             'save_to_message' => false,

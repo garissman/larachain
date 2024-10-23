@@ -39,9 +39,7 @@ abstract class FunctionContract
     }
 
     abstract public function handle(
-        Message $toolMessage,
-        Message $assistanceMessage,
-        $arguments = [],
+        Message $message
     ): FunctionResponse;
 
     public function getFunction(): FunctionDto|array

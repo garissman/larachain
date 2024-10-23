@@ -41,10 +41,9 @@ class ProcessPendingResponse implements ShouldQueue
                         'args' => $tool_call->arguments,
                     ]);
                     $toolMessage = $response->assistanceMessage;
-                    $tool->handle($toolMessage, $response->assistanceMessage, $tool_call->arguments);
                     if (!$this->batch()->cancelled()) {
                         $this->batch()->add([
-                            new ProcessPendingTool($tool, $response->assistanceMessage, $toolMessage, $tool_call->arguments),
+                            new ProcessPendingTool($tool, $toolMessage),
                         ]);
                     }
                 }

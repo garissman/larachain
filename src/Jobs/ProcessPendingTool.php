@@ -18,9 +18,8 @@ class ProcessPendingTool implements ShouldQueue
 
     public function __construct(
         private readonly FunctionContract $tool,
-        private readonly Message          $assistanceMessage,
-        private readonly Message          $toolMessage,
-        private                           $arguments)
+        private readonly Message          $message,
+    )
     {
 
     }
@@ -32,10 +31,10 @@ class ProcessPendingTool implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->tool->handle($this->toolMessage, $this->assistanceMessage, $this->arguments);
+        $this->tool->handle($this->message);
         if (!$this->batch()->cancelled()) {
             $this->batch()->add([
-                new ProcessPendingResponse($this->assistanceMessage->chat)
+                new ProcessPendingResponse($this->message->chat)
             ]);
         }
     }
