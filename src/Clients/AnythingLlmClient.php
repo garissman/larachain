@@ -34,7 +34,7 @@ class AnythingLlmClient extends BaseClient
             $thread = $message->chat->metadata['anything_llm']['thread']['slug'];
             $url = "api/v1/workspace/" . $workspace . "/thread/" . $thread . "/";
         }else{
-            $url = "api/v1/workspace/" . $workspace . "/chat";
+            $url = "api/v1/workspace/" . $workspace . "/";
         }
 
         $payload = [
