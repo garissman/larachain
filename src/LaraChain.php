@@ -33,7 +33,7 @@ class LaraChain
             ->setChat($chat);
     }
 
-    public function engine(DriversEnum $driver): OllamaEngine|NullEngine|OpenAiEngine
+    public function engine(DriversEnum $driver): OllamaEngine|NullEngine|OpenAiEngine|AnythingLlmEngine
     {
         return (new EngineManager($this->container))
             ->engine($driver->value);
