@@ -30,12 +30,17 @@ class AnythingLlmClient extends BaseClient
         $stream = config('larachain.drivers.anything_llm.stream', false);
         $workspace = config('larachain.drivers.anything_llm.workspace', 'default');
         $mode = config('larachain.drivers.anything_llm.mode', 'chat');
-        $thread = $message->chat->metadata['anything_llm']['thread']['slug'];
+        if (isset($message->chat->metadata['anything_llm']['thread']['slug'])) {
+            $thread = $message->chat->metadata['anything_llm']['thread']['slug'];
+            $url = "api/v1/workspace/" . $workspace . "/thread/" . $thread . "/";
+        }else{
+            $url = "api/v1/workspace/" . $workspace . "/chat";
+        }
+
         $payload = [
             'message' => $messages[count($messages) - 1]['content'],
             'mode' => $mode
         ];
-        $url = "api/v1/workspace/" . $workspace . "/thread/" . $thread . "/";
         if ($stream) {
             $url.="stream-chat";
         }else{
