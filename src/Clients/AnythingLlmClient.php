@@ -152,6 +152,8 @@ class AnythingLlmClient extends BaseClient
         return Http::withHeaders([
             'content-type' => 'application/json',
         ])
+            ->retry(3, 6000)
+            ->timeout(120)
             ->withToken($api_token)
             ->baseUrl($baseUrl);
     }
