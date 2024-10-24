@@ -22,6 +22,7 @@ class MetaDataDto extends Data
         public mixed $reference_collection_id = '',
         public array $args = [],
         public array $whatsapp_message = [],
+        public array $twilio_whatsapp_message = [],
     ) {
 
     }
